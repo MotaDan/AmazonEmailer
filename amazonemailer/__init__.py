@@ -1,0 +1,1 @@
+from amazonemailer.amazonemailer import *
