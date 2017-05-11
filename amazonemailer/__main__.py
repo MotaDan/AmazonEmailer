@@ -22,9 +22,13 @@ def main():
         setup_database()
         
     if args.pages:
-        pull_items(args.pages)
+        pull_items(args.pages.split(','))
     else:
-        pull_items()
+        pages = ('https://www.amazon.com/gp/bestsellers/wireless/ref=sv_cps_6', 
+             'https://www.amazon.com/Best-Sellers-Cell-Phones-Accessories-Unlocked/zgbs/wireless/2407749011/ref=zg_bs_nav_cps_1_cps', 
+             'https://www.amazon.com/Best-Sellers-Cell-Phones-Accessories-Phone-Cases-Holsters-Clips/zgbs/wireless/2407760011/ref=zg_bs_nav_cps_2_2407749011')
+
+        pull_items(pages)
         
     if args.file:
         items_to_xls(args.file)
@@ -34,7 +38,7 @@ def main():
         items_to_csv()
 
     if args.email:
-        send_email(args.email)
+        send_email(args.email.split(','))
     else:
         send_email()
 

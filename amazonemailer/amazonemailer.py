@@ -76,15 +76,11 @@ def items_to_xls(file_name="output/AmazonItems.xls"):
         f.write(book.xls)
         
         
-def pull_items():
+def pull_items(pages=[]):
     """Pulls items down from amazon for the given pages."""
     connection = sqlite3.connect(_database_name)
     cursor = connection.cursor()
     
-    pages = ('https://www.amazon.com/gp/bestsellers/wireless/ref=sv_cps_6', 
-             'https://www.amazon.com/Best-Sellers-Cell-Phones-Accessories-Unlocked/zgbs/wireless/2407749011/ref=zg_bs_nav_cps_1_cps', 
-             'https://www.amazon.com/Best-Sellers-Cell-Phones-Accessories-Phone-Cases-Holsters-Clips/zgbs/wireless/2407760011/ref=zg_bs_nav_cps_2_2407749011')
-
     for page in pages:
         r = requests.get(page)
         asoup = BeautifulSoup(r.text, 'lxml')
@@ -118,6 +114,6 @@ def setup_config(config_name=''):
     pass
     
     
-def send_email(email_list=''):
+def send_email(email_list=[]):
     """Sends output files to the emails in the list."""
     pass
