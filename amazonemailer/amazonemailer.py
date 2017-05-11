@@ -4,6 +4,7 @@ import sqlite3
 from os import remove, path, makedirs
 import csv
 import tablib
+import re
 
 _database_name = "output/amazonBestSellers.db"
 
@@ -28,7 +29,8 @@ def setup_database(database_name=_database_name):
     price FLOAT, 
     link TEXT, 
     rank INTEGER, 
-    unique (name, reviewScore, price, link, rank));"""
+    asin TEXT, 
+    unique (name, reviewScore, price, link, rank, asin));"""
 
     cursor.execute(sql_command)
     
@@ -41,10 +43,10 @@ def items_to_csv(file_name="output/AmazonItems.csv"):
     makedirs(path.dirname(file_name), exist_ok=True)
     with open(file_name, 'w', newline='') as f:
         fileWriter = csv.writer(f)
-        cursor.execute("""SELECT rank, name, reviewscore, price, link FROM items WHERE category = 'Cell Phones & Accessories' ORDER BY rank""")
+        cursor.execute("""SELECT rank, name, reviewscore, price, asin, link FROM items WHERE category = 'Cell Phones & Accessories' ORDER BY rank""")
         result = cursor.fetchall()
         
-        fileWriter.writerow(("Rank", "Name", "Review Score", "Price", "Link"))
+        fileWriter.writerow(("Rank", "Name", "Review Score", "Price", "ASIN", "Link"))
         for item in result:
             fileWriter.writerow(item)
             
@@ -60,10 +62,10 @@ def items_to_xls(file_name="output/AmazonItems.xls"):
     book = tablib.Databook()
 
     for category in categories:
-        cursor.execute("""SELECT rank, name, reviewscore, price, link FROM items WHERE category = ?ORDER BY rank""", category)
+        cursor.execute("""SELECT rank, name, reviewscore, price, asin, link FROM items WHERE category = ?ORDER BY rank""", category)
         items = cursor.fetchall()
         data = tablib.Dataset(title = category[0][:31])
-        data.headers = ["Rank", "Name", "Review Score", "Price", "Link"]
+        data.headers = ["Rank", "Name", "Review Score", "Price", "ASIN", "Link"]
         
         for item in items:
             data.append(item)
@@ -76,6 +78,15 @@ def items_to_xls(file_name="output/AmazonItems.xls"):
         f.write(book.xls)
         
         
+def get_asin(address):
+    """Strips the ASIN out of a url and returns in."""
+    splitaddy = re.split('[/\?]+', address)
+    asin = [elem for elem in splitaddy if re.match("[A-Z0-9]{10}", elem)]
+    asin = " ".join(asin)  # In case there are false positives everything is returned.
+    if len(asin) > 10:   print(asin)
+    return asin
+    
+    
 def pull_items(pages=[]):
     """Pulls items down from amazon for the given pages."""
     connection = sqlite3.connect(_database_name)
@@ -100,11 +111,12 @@ def pull_items(pages=[]):
             if wrapper.find(class_="a-size-base a-color-price") is not None:
                 pricestr = wrapper.find(class_="a-size-base a-color-price").string.lstrip('$')
             linkstr = "https://www.amazon.com" + wrapper.find('a')['href']
+            asinstr = get_asin(linkstr)
             rankstr = item.find('span', class_='zg_rankNumber').string.strip().rstrip('.')
             
-            sql_command = """INSERT INTO items (item_number, category, name, reviewscore, price, link, rank)
-            VALUES (NULL, ?, ?, ?, ?, ?, ?);"""
-            cursor.execute(sql_command, (categorystr, namestr, reviewscorestr, pricestr, linkstr, rankstr))
+            sql_command = """INSERT INTO items (item_number, category, name, reviewscore, price, link, rank, asin)
+            VALUES (NULL, ?, ?, ?, ?, ?, ?, ?);"""
+            cursor.execute(sql_command, (categorystr, namestr, reviewscorestr, pricestr, linkstr, rankstr, asinstr))
 
         connection.commit()
         

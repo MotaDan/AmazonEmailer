@@ -9,6 +9,7 @@ def main():
     parser.add_argument("-c", "--config", help="location of config file")
     parser.add_argument("-e", "--email", help="email addresses items should be sent to, comma seperated")
     parser.add_argument("-p", "--pages", help="pages that should be checked for items, comma seperated")
+    parser.add_argument("-r", "--range", help="range of rankings that should be returned, comma seperated")
     parser.add_argument("-d", "--database", help="database name to be generated")
     parser.add_argument("-f", "--file", help="file name to be generated")
     args = parser.parse_args()
