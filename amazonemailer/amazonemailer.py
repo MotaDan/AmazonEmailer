@@ -87,7 +87,7 @@ def get_asin(address):
     return asin
     
     
-def pull_items(pages=[]):
+def pull_items(pages=[], range=[1, 60]):
     """Pulls items down from amazon for the given pages."""
     connection = sqlite3.connect(_database_name)
     cursor = connection.cursor()

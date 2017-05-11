@@ -22,8 +22,12 @@ def main():
     else:
         setup_database()
         
-    if args.pages:
+    if args.pages and args.range:
+        pull_items(args.pages.split(','), args.range.split(','))
+    elif args.pages:
         pull_items(args.pages.split(','))
+    elif args.range:
+        pull_items(args.range.split(','))
     else:
         pages = ('https://www.amazon.com/gp/bestsellers/wireless/ref=sv_cps_6', 
              'https://www.amazon.com/Best-Sellers-Cell-Phones-Accessories-Unlocked/zgbs/wireless/2407749011/ref=zg_bs_nav_cps_1_cps', 
