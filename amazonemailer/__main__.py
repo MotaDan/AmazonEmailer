@@ -4,21 +4,39 @@ from amazonemailer import *
 
 
 def main():
-    """Given an image and a message or file steganographer will hide the message or file in the bits of the image."""
-    parser = argparse.ArgumentParser(description="hides a message in a file or returns a message hidden in a file")
-    parser.add_argument("-i", help="file to hide a message in or file to reveal a message from")
-    parser.add_argument("-m", "--message", help="message to be hidden in the input file")
-    parser.add_argument("-o", "--output",
-                        help="name of output file to hide message in or to write revealed message")
-    parser.add_argument("-f", "--file", help="file to be hidden in the input file")
-    parser.add_argument("-r", "--reveal", action='store_true', help="a file will be revealed")
+    """Sets up database, gets items, generates files and emails them."""
+    parser = argparse.ArgumentParser(description="gets items from amazon and sends out an email with the items")
+    parser.add_argument("-c", "--config", help="location of config file")
+    parser.add_argument("-e", "--email", help="email addresses items should be sent to, comma seperated")
+    parser.add_argument("-p", "--pages", help="pages that should be checked for items, comma seperated")
+    parser.add_argument("-d", "--database", help="database name to be generated")
+    parser.add_argument("-f", "--file", help="file name to be generated")
     args = parser.parse_args()
+    
+    if args.config:
+        setup_config(args.config)
 
-    setup_database()
-    pull_items()
-    items_to_xls()
-    items_to_csv()
+    if args.database:
+        setup_database(args.database)
+    else:
+        setup_database()
+        
+    if args.pages:
+        pull_items(args.pages)
+    else:
+        pull_items()
+        
+    if args.file:
+        items_to_xls(args.file)
+        items_to_csv(args.file)
+    else:
+        items_to_xls()
+        items_to_csv()
 
+    if args.email:
+        send_email(args.email)
+    else:
+        send_email()
 
 if __name__ == "__main__":
     main()

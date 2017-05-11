@@ -111,3 +111,13 @@ def pull_items():
             cursor.execute(sql_command, (categorystr, namestr, reviewscorestr, pricestr, linkstr, rankstr))
 
         connection.commit()
+        
+        
+def setup_config(config_name=''):
+    """Get all available information from passed in config file."""
+    pass
+    
+    
+def send_email(email_list=''):
+    """Sends output files to the emails in the list."""
+    pass
