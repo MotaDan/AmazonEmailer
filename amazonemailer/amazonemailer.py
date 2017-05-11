@@ -1,15 +1,16 @@
 from bs4 import BeautifulSoup
 import requests
 import sqlite3
-from os import remove, path
+from os import remove, path, makedirs
 import csv
 import tablib
 
-_database_name = "amazonBestSellers.db"
+_database_name = "output/amazonBestSellers.db"
 
 def setup_database(database_name=_database_name):
     """Setting up sqlite database for items."""
     _database_name = database_name
+    makedirs(path.dirname(database_name), exist_ok=True)
     
     # Deleting the previous database to avoid duplicate entries. I don't care what items existed before.
     if path.isfile(_database_name):
@@ -32,11 +33,12 @@ def setup_database(database_name=_database_name):
     cursor.execute(sql_command)
     
     
-def items_to_csv(file_name="AmazonItems.csv"):
+def items_to_csv(file_name="output/AmazonItems.csv"):
     """Writing the items information to a csv file."""
     connection = sqlite3.connect(_database_name)
     cursor = connection.cursor()
     
+    makedirs(path.dirname(file_name), exist_ok=True)
     with open(file_name, 'w', newline='') as f:
         fileWriter = csv.writer(f)
         cursor.execute("""SELECT rank, name, reviewscore, price, link FROM items WHERE category = 'Cell Phones & Accessories' ORDER BY rank""")
@@ -47,7 +49,7 @@ def items_to_csv(file_name="AmazonItems.csv"):
             fileWriter.writerow(item)
             
             
-def items_to_xls(file_name="AmazonItems.xls"):
+def items_to_xls(file_name="output/AmazonItems.xls"):
     """Writing the items information to an excel file with multiple sheets."""
     connection = sqlite3.connect(_database_name)
     cursor = connection.cursor()
@@ -69,6 +71,7 @@ def items_to_xls(file_name="AmazonItems.xls"):
         book.add_sheet(data)
         
     # Writing the items information to an excel file with multiple sheets
+    makedirs(path.dirname(file_name), exist_ok=True)
     with open(file_name, 'wb') as f:
         f.write(book.xls)
         
