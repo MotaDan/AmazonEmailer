@@ -5,6 +5,9 @@
 #    pip-compile --output-file requirements.txt requirements.in
 #
 beautifulsoup4==4.6.0
+keyring==10.3.2           # via yagmail
 lxml==3.7.3
+pywin32-ctypes==0.0.1     # via keyring
 requests==2.14.2
 tablib==0.11.4
+yagmail[all]==0.6.161
