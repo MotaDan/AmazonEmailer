@@ -1,7 +1,7 @@
 """Testing script"""
 import pytest
 from os import path
-from amazonemailer import get_asin, setup_database
+from amazonemailer import get_asin, setup_database, send_email
 
 def test_get_asin():
     """ASIN is retrieved from address."""
@@ -41,5 +41,7 @@ def test_setup_config():
     
 def test_send_email():
     """Emails are sent to the passed in list."""
-    assert True
+    email_list = []
+    
+    send_email(email_list)
     

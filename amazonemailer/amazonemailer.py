@@ -5,6 +5,7 @@ from os import remove, path, makedirs
 import csv
 import tablib
 import re
+import yagmail
 
 _database_name = "output/amazonBestSellers.db"
 
@@ -128,4 +129,10 @@ def setup_config(config_name=''):
     
 def send_email(email_list=[]):
     """Sends output files to the emails in the list."""
-    pass
+    yag = yagmail.SMTP('emailaddress', 'password')
+    contents = ["Attached are the amazon items.",  "output/AmazonItems.csv"]
+    
+    if len(email_list) > 0:
+        yag.send(to=email_list, subject="AmazonEmailer Test in script", contents=contents)
+    else:
+        yag.send(subject="AmazonEmailer Test in script", contents=contents)
