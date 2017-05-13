@@ -175,7 +175,7 @@ class AmazonEmailer:
         
     def send_email(self, email_list=[]):
         """Sends output files to the emails in the list."""
-        yag = yagmail.SMTP('email address', 'password')
+        yag = yagmail.SMTP(self._email_address, self._email_password)
         contents = ["Attached are the amazon items.",  "output/AmazonItems.csv"]
         
         if len(email_list) > 0:
