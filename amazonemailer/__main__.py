@@ -7,11 +7,13 @@ def main():
     """Sets up database, gets items, generates files and emails them."""
     parser = argparse.ArgumentParser(description="gets items from amazon and sends out an email with the items")
     parser.add_argument("-c", "--config", help="location of config file")
-    parser.add_argument("-e", "--email", help="email addresses items should be sent to, comma seperated")
+    parser.add_argument("-e", "--email_list", help="email addresses items should be sent to, comma seperated")
     parser.add_argument("-p", "--pages", help="pages that should be checked for items, comma seperated")
     parser.add_argument("-r", "--range", help="range of rankings that should be returned, comma seperated")
     parser.add_argument("-d", "--database", help="database name to be generated")
-    parser.add_argument("-f", "--file", help="file name to be generated")
+    parser.add_argument("-f", "--file_name", help="file name to be generated")
+    parser.add_argument("-a", "--email_address", help="email address for the sender")
+    parser.add_argument("-b", "--email_password", help="email address password for the sender")
     args = parser.parse_args()
     
     aemailer = AmazonEmailer()
@@ -19,7 +21,7 @@ def main():
     aemailer.read_config()
     
     if args.config:
-        aemailer.setup_config(args.config)
+        aemailer.setup_config(pages=args.pages, email_list=args.email-list, range=args.range, config_name=args.config, database_name=args.database-name, file_name=args.file-name)
 
     if args.database:
         aemailer.setup_database(args.database)
@@ -39,15 +41,15 @@ def main():
 
         aemailer.pull_items(pages)
         
-    if args.file:
-        aemailer.items_to_xls(args.file)
-        aemailer.items_to_csv(args.file)
+    if args.file_name:
+        aemailer.items_to_xls(args.file_name)
+        aemailer.items_to_csv(args.file_name)
     else:
         aemailer.items_to_xls()
         aemailer.items_to_csv()
 
-    if args.email:
-        aemailer.send_email(args.email.split(','))
+    if args.email_list:
+        aemailer.send_email(args.email_list.split(','))
     else:
         aemailer.send_email()
 
