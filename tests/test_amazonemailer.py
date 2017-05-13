@@ -1,20 +1,23 @@
 """Testing script"""
 import pytest
 from os import path
-from amazonemailer import get_asin, setup_database, send_email, write_config
+from amazonemailer import *
+
 
 def test_get_asin():
     """ASIN is retrieved from address."""
+    aemailer = AmazonEmailer()
     address = "https://www.amazon.com/AmazonBasics-Apple-Certified-Lightning-Cable/dp/B010S9N6OO?_encoding=UTF8&psc=1"
     expected_asin = "B010S9N6OO"
     
-    assert expected_asin == get_asin(address)
+    assert expected_asin == aemailer.get_asin(address)
     
     
 def test_setup_database():
     """The database is what I think it is."""
+    aemailer = AmazonEmailer()
     database_name = "./tests/test_database.db"
-    setup_database(database_name)
+    aemailer.setup_database(database_name)
     
     assert path.isfile(database_name)
 
@@ -36,12 +39,15 @@ def test_pull_items():
     
 def test_write_config():
     """Values are written to the config file."""
-    write_config()
+    aemailer = AmazonEmailer()
+    aemailer.write_config()
     assert True
     
     
 def test_read_config():
     """Values are read from the config file."""
+    aemailer = AmazonEmailer()
+    aemailer.read_config()
     assert True
     
     
@@ -52,7 +58,8 @@ def test_setup_config():
     
 def test_send_email():
     """Emails are sent to the passed in list."""
+    aemailer = AmazonEmailer()
     email_list = []
     
-    send_email(email_list)
+    #aemailer().send_email(email_list)
     
