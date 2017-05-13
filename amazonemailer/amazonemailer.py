@@ -6,8 +6,14 @@ import csv
 import tablib
 import re
 import yagmail
+import yaml
 
 _database_name = "output/amazonBestSellers.db"
+_config_name = "./amzonemailer_config.yaml"
+_email_list = []
+_pages = []
+_range = []
+_file_name = ""
 
 def setup_database(database_name=_database_name):
     """Setting up sqlite database for items."""
@@ -122,6 +128,19 @@ def pull_items(pages=[], range=[1, 60]):
         connection.commit()
         
         
+def write_config():
+    """Takes the private functions and stores them out to a config file."""
+    makedirs(path.dirname(_config_name), exist_ok=True)
+    
+    with open(_config_name, 'w') as f:
+        yaml.dump({'pages': _pages, 'email list': _email_list, 'range': _range, 'config name': _config_name, 'database name': _database_name, 'file name': _file_name}, f)
+    
+    
+def read_config():
+    """Reads in a config file and stores all the values in the private variables."""
+    pass
+    
+    
 def setup_config(config_name=''):
     """Get all available information from passed in config file."""
     pass

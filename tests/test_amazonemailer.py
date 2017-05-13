@@ -1,7 +1,7 @@
 """Testing script"""
 import pytest
 from os import path
-from amazonemailer import get_asin, setup_database, send_email
+from amazonemailer import get_asin, setup_database, send_email, write_config
 
 def test_get_asin():
     """ASIN is retrieved from address."""
@@ -31,6 +31,17 @@ def test_items_to_xls():
     
 def test_pull_items():
     """Items from given page and range are returned."""
+    assert True
+    
+    
+def test_write_config():
+    """Values are written to the config file."""
+    write_config()
+    assert True
+    
+    
+def test_read_config():
+    """Values are read from the config file."""
     assert True
     
     

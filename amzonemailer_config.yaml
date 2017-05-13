@@ -1,0 +1,6 @@
+config name: ./amzonemailer_config.yaml
+database name: output/amazonBestSellers.db
+email list: []
+file name: ''
+pages: []
+range: []
