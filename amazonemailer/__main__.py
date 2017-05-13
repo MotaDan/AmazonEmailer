@@ -23,6 +23,8 @@ def main():
     if args.config:
         aemailer.setup_config(pages=args.pages, email_list=args.email-list, range=args.range, config_name=args.config, database_name=args.database-name, file_name=args.file-name)
 
+    aemailer.write_config()
+    
     if args.database:
         aemailer.setup_database(args.database)
     else:
