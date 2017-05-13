@@ -1,6 +1,8 @@
 config name: ./amzonemailer_config.yaml
 database name: output/amazonBestSellers.db
+email address: ''
 email list: []
+email password: ''
 file name: ''
 pages: []
 range: []
