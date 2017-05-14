@@ -7,6 +7,7 @@ import tablib
 import re
 import yagmail
 import yaml
+from math import ceil
 
 
 class AmazonEmailer:
@@ -104,38 +105,40 @@ class AmazonEmailer:
         return asin
         
         
-    def pull_items(self, pages=[], range=[1, 60]):
+    def pull_items(self, pages=[], item_range=[1, 60]):
         """Pulls items down from amazon for the given pages."""
         connection = sqlite3.connect(self._database_name)
         cursor = connection.cursor()
         
         for page in pages:
-            r = requests.get(page)
-            asoup = BeautifulSoup(r.text, 'lxml')
-            
-            categorystr = asoup.find('span', class_="category").string
+            next_page = page
+            for page_num in range(ceil(item_range[0] / 20), ceil(item_range[1] / 20)+1):
+                r = requests.get(next_page)
+                asoup = BeautifulSoup(r.text, 'lxml')
+                next_page = asoup.find('a', page=str(page_num+1))['href']
+                categorystr = asoup.find('span', class_="category").string
 
-            # zg_itemImmersion is the tag that contains all the data on an item.
-            items = asoup.find_all('div', class_="zg_itemImmersion")
+                # zg_itemImmersion is the tag that contains all the data on an item.
+                items = asoup.find_all('div', class_="zg_itemImmersion")
 
-            # Scrapping the item information and adding it to the database.
-            for item in items:
-                wrapper = item.find('div', class_='zg_itemWrapper')
-                links = wrapper.find_all('a')
-                namestr = links[0].find_all('div')[1].string.strip()
-                reviewscorestr = links[1]['title'] if len(links) > 1 else ""
-                pricestr = ""
-                if wrapper.find(class_="a-size-base a-color-price") is not None:
-                    pricestr = wrapper.find(class_="a-size-base a-color-price").string.lstrip('$')
-                linkstr = "https://www.amazon.com" + wrapper.find('a')['href']
-                asinstr = self.get_asin(linkstr)
-                rankstr = item.find('span', class_='zg_rankNumber').string.strip().rstrip('.')
-                
-                sql_command = """INSERT INTO items (item_number, category, name, reviewscore, price, link, rank, asin)
-                VALUES (NULL, ?, ?, ?, ?, ?, ?, ?);"""
-                cursor.execute(sql_command, (categorystr, namestr, reviewscorestr, pricestr, linkstr, rankstr, asinstr))
+                # Scrapping the item information and adding it to the database.
+                for item in items:
+                    wrapper = item.find('div', class_='zg_itemWrapper')
+                    links = wrapper.find_all('a')
+                    namestr = links[0].find_all('div')[1].string.strip()
+                    reviewscorestr = links[1]['title'] if len(links) > 1 else ""
+                    pricestr = ""
+                    if wrapper.find(class_="a-size-base a-color-price") is not None:
+                        pricestr = wrapper.find(class_="a-size-base a-color-price").string.lstrip('$')
+                    linkstr = "https://www.amazon.com" + wrapper.find('a')['href']
+                    asinstr = self.get_asin(linkstr)
+                    rankstr = item.find('span', class_='zg_rankNumber').string.strip().rstrip('.')
+                    
+                    sql_command = """INSERT  OR IGNORE INTO items (item_number, category, name, reviewscore, price, link, rank, asin)
+                    VALUES (NULL, ?, ?, ?, ?, ?, ?, ?);"""
+                    cursor.execute(sql_command, (categorystr, namestr, reviewscorestr, pricestr, linkstr, rankstr, asinstr))
 
-            connection.commit()
+                connection.commit()
             
             
     def write_config(self):
