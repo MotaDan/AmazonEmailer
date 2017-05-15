@@ -165,16 +165,16 @@ class AmazonEmailer:
         self._email_password = config_info['email password']
         
         
-    def setup_config(self, pages = [], email_list = [], range = [], config_name='', database_name = '', file_name = '', email_address = '', email_password = ''):
+    def setup_config(self, pages, email_list, range, config, database, file, email_address, email_password):
         """Get all available information from passed in config file."""
-        self._pages = pages if pages is not [] else self._pages
-        self._email_list = email_list if email_list is not [] else self._email_list
-        self._range = range if range is not [] else self._range
-        self._config_name = config_name if config_name is not '' else self._config_name
-        self._database_name = database_name if database_name is not '' else self._database_name
-        self._file_name = file_name if file_name is not '' else self._file_name
-        self._email_address = email_address if email_address is not '' else self._email_address
-        self._email_password = email_password if email_password is not '' else self._email_password
+        self._pages = pages if pages is not None else self._pages
+        self._email_list = email_list if email_list is not None else self._email_list
+        self._range = range if range is not None else self._range
+        self._config_name = config if config is not None else self._config_name
+        self._database_name = database if database is not None else self._database_name
+        self._file_name = file if file is not None else self._file_name
+        self._email_address = email_address if email_address is not None else self._email_address
+        self._email_password = email_password if email_password is not None else self._email_password
         
         
     def send_email(self, email_list=[]):
