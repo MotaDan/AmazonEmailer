@@ -77,23 +77,24 @@ class AmazonEmailer:
         cursor.execute("""SELECT category FROM items GROUP BY category ORDER BY item_number""")
         categories = cursor.fetchall()
 
-        book = tablib.Databook()
+        if len(categories) > 0:
+            book = tablib.Databook()
 
-        for category in categories:
-            cursor.execute("""SELECT rank, name, reviewscore, price, asin, link FROM items WHERE category = ?ORDER BY rank""", category)
-            items = cursor.fetchall()
-            data = tablib.Dataset(title = category[0][:31])
-            data.headers = ["Rank", "Name", "Review Score", "Price", "ASIN", "Link"]
-            
-            for item in items:
-                data.append(item)
-            
-            book.add_sheet(data)
-            
-        # Writing the items information to an excel file with multiple sheets
-        makedirs(path.dirname(file_name), exist_ok=True)
-        with open(file_name, 'wb') as f:
-            f.write(book.xls)
+            for category in categories:
+                cursor.execute("""SELECT rank, name, reviewscore, price, asin, link FROM items WHERE category = ?ORDER BY rank""", category)
+                items = cursor.fetchall()
+                data = tablib.Dataset(title = category[0][:31])
+                data.headers = ["Rank", "Name", "Review Score", "Price", "ASIN", "Link"]
+                
+                for item in items:
+                    data.append(item)
+                
+                book.add_sheet(data)
+                
+            # Writing the items information to an excel file with multiple sheets
+            makedirs(path.dirname(file_name), exist_ok=True)
+            with open(file_name, 'wb') as f:
+                f.write(book.xls)
             
             
     def get_asin(self, address):
