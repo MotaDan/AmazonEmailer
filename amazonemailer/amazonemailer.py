@@ -170,7 +170,7 @@ class AmazonEmailer:
         self._pages = pages if pages is not [] else self._pages
         self._email_list = email_list if email_list is not [] else self._email_list
         self._range = range if range is not [] else self._range
-        self._config_name = config_name if cofig_name is not '' else self._config_name
+        self._config_name = config_name if config_name is not '' else self._config_name
         self._database_name = database_name if database_name is not '' else self._database_name
         self._file_name = file_name if file_name is not '' else self._file_name
         self._email_address = email_address if email_address is not '' else self._email_address
