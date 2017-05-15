@@ -6,6 +6,7 @@ import csv
 import tablib
 import re
 import yagmail
+import keyring
 import yaml
 from math import ceil
 
@@ -156,7 +157,7 @@ class AmazonEmailer:
         makedirs(path.dirname(self._config_name), exist_ok=True)
         
         with open(self._config_name, 'w') as f:
-            yaml.dump({'pages': ','.join(self._pages), 'email list': ','.join(self._email_list), 'range': ','.join(self._range), 'config name': self._config_name, 'database name': self._database_name, 'file name': self._file_name, 'email address': self._email_address, 'email password': self._email_password}, f)
+            yaml.dump({'pages': (self._pages), 'email list': ','.join(self._email_list), 'range': ','.join(self._range), 'config name': self._config_name, 'database name': self._database_name, 'file name': self._file_name, 'email address': self._email_address, 'email password': ''}, f)
         
         
     def read_config(self):
@@ -186,12 +187,25 @@ class AmazonEmailer:
         self._email_password = email_password if email_password is not None else self._email_password
         
         
-    def send_email(self, email_list=[]):
+    def send_email(self):
         """Sends output files to the emails in the list."""
-        yag = yagmail.SMTP(self._email_address, self._email_password)
-        contents = ["Attached are the amazon items.",  "output/AmazonItems.csv"]
+        if self._email_address and keyring.get_password('yagmail', self._email_address) is None:
+            self.store_email_info()
+            
+        try:
+            with yagmail.SMTP(self._email_address) as yag:
+                contents = ["Attached are the amazon items.",  "output/AmazonItems.csv"]
+                
+                if len(self._email_list) > 0:
+                    yag.send(to=self._email_list, subject="AmazonEmailer", contents=contents)
+                else:
+                    yag.send(subject="AmazonEmailer", contents=contents)
+        except FileNotFoundError:
+            print("Need gmail address to send emails from.")
+
+            
+    def store_email_info(self):
+        """Stores email address and password in keyring."""
+        yagmail.register(self._email_address, self._email_password)
+        print("Email address and password stored to keyring.")
         
-        if len(email_list) > 0:
-            yag.send(to=email_list, subject="AmazonEmailer Test in script", contents=contents)
-        else:
-            yag.send(subject="AmazonEmailer Test in script", contents=contents)
