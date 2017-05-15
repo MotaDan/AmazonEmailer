@@ -16,12 +16,12 @@ class AmazonEmailer:
         """Setting up private variables."""
         self._database_name = "output/amazonBestSellers.db"
         self._config_name = "./amzonemailer_config.yaml"
-        self._email_list = []
-        self._pages = []
-        self._range = []
-        self._file_name = ""
-        self._email_address = ""
-        self._email_password = ""
+        self._email_list = ''
+        self._pages = ''
+        self._range = ''
+        self._file_name = ''
+        self._email_address = ''
+        self._email_password = ''
     
 
     def setup_database(self, database_name=""):
@@ -61,7 +61,7 @@ class AmazonEmailer:
         makedirs(path.dirname(file_name), exist_ok=True)
         with open(file_name, 'w', newline='') as f:
             fileWriter = csv.writer(f)
-            cursor.execute("""SELECT rank, name, reviewscore, price, asin, link FROM items WHERE category = 'Cell Phones & Accessories' ORDER BY rank""")
+            cursor.execute("""SELECT rank, name, reviewscore, price, asin, link FROM items WHERE category = 'Cell Phones & Accessories' AND rank >= ? ORDER BY rank""", (int(self._range[0]),))
             result = cursor.fetchall()
             
             fileWriter.writerow(("Rank", "Name", "Review Score", "Price", "ASIN", "Link"))
@@ -81,7 +81,7 @@ class AmazonEmailer:
             book = tablib.Databook()
 
             for category in categories:
-                cursor.execute("""SELECT rank, name, reviewscore, price, asin, link FROM items WHERE category = ?ORDER BY rank""", category)
+                cursor.execute("""SELECT rank, name, reviewscore, price, asin, link FROM items WHERE category = ? AND rank >= ? ORDER BY rank""", (str(category[0]), int(self._range[0])))
                 items = cursor.fetchall()
                 data = tablib.Dataset(title = category[0][:31])
                 data.headers = ["Rank", "Name", "Review Score", "Price", "ASIN", "Link"]
@@ -106,15 +106,23 @@ class AmazonEmailer:
         return asin
         
         
-    def pull_items(self, pages=[], item_range=[1, 60]):
+    def pull_items(self, pages=[]):
         """Pulls items down from amazon for the given pages."""
         connection = sqlite3.connect(self._database_name)
         cursor = connection.cursor()
         
         for page in pages:
-            next_page = page
-            for page_num in range(ceil(item_range[0] / 20), ceil(item_range[1] / 20)+1):
+            r = requests.get(page)
+            first_page_num = ceil(int(self._range[0]) / 20)
+            
+            # Fast forwarding to the first page in the range
+            for page_num in range(first_page_num):
+                asoup = BeautifulSoup(r.text, 'lxml')
+                next_page = asoup.find('a', page=str(page_num+1))['href']
                 r = requests.get(next_page)
+            
+            # Going through all the pages and getting their items.
+            for page_num in range(first_page_num, ceil(int(self._range[1]) / 20)+1):
                 asoup = BeautifulSoup(r.text, 'lxml')
                 next_page = asoup.find('a', page=str(page_num+1))['href']
                 categorystr = asoup.find('span', class_="category").string
@@ -140,6 +148,7 @@ class AmazonEmailer:
                     cursor.execute(sql_command, (categorystr, namestr, reviewscorestr, pricestr, linkstr, rankstr, asinstr))
 
                 connection.commit()
+                r = requests.get(next_page)
             
             
     def write_config(self):
@@ -147,7 +156,7 @@ class AmazonEmailer:
         makedirs(path.dirname(self._config_name), exist_ok=True)
         
         with open(self._config_name, 'w') as f:
-            yaml.dump({'pages': self._pages, 'email list': self._email_list, 'range': self._range, 'config name': self._config_name, 'database name': self._database_name, 'file name': self._file_name, 'email address': self._email_address, 'email password': self._email_password}, f)
+            yaml.dump({'pages': ','.join(self._pages), 'email list': ','.join(self._email_list), 'range': ','.join(self._range), 'config name': self._config_name, 'database name': self._database_name, 'file name': self._file_name, 'email address': self._email_address, 'email password': self._email_password}, f)
         
         
     def read_config(self):
@@ -155,9 +164,9 @@ class AmazonEmailer:
         with open(self._config_name, 'r') as f:
             config_info = yaml.load(f)
             
-        self._pages = config_info['pages']
-        self._email_list = config_info['email list']
-        self._range = config_info['range']
+        self._pages = config_info['pages'].split(',')
+        self._email_list = config_info['email list'].split(',')
+        self._range = config_info['range'].split(',')
         self._config_name = config_info['config name']
         self._database_name = config_info['database name']
         self._file_name = config_info['file name']
@@ -167,9 +176,9 @@ class AmazonEmailer:
         
     def setup_config(self, pages, email_list, range, config, database, file, email_address, email_password):
         """Get all available information from passed in config file."""
-        self._pages = pages if pages is not None else self._pages
-        self._email_list = email_list if email_list is not None else self._email_list
-        self._range = range if range is not None else self._range
+        self._pages = pages.split(',') if pages is not None else self._pages
+        self._email_list = email_list.split(',') if email_list is not None else self._email_list
+        self._range = range.split(',') if range is not None else self._range
         self._config_name = config if config is not None else self._config_name
         self._database_name = database if database is not None else self._database_name
         self._file_name = file if file is not None else self._file_name
