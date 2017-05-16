@@ -39,6 +39,8 @@ if __name__ == "__main__":
     parser.add_argument("-b", "--email_password", help="email address password for the sender")
     args = parser.parse_args()
     
+    main(args)
+    
     schedule.every().day.at("9:00").do(main, args)
     
     while True:
