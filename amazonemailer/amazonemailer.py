@@ -190,13 +190,14 @@ class AmazonEmailer:
             self.store_email_info()
         
         try:
-            with yagmail.SMTP(self._email_address) as yag:
-                contents = ["Attached are the amazon items.",  "output/AmazonItems.csv"]
-                
-                if len(self._email_list) > 0:
-                    yag.send(to=self._email_list, subject="AmazonEmailer", contents=contents)
-                else:
-                    yag.send(subject="AmazonEmailer", contents=contents)
+            if self._email_address:
+                with yagmail.SMTP(self._email_address) as yag:
+                    contents = ["Attached are the amazon items.",  "output/AmazonItems.csv"]
+                    
+                    if len(self._email_list) > 0:
+                        yag.send(to=self._email_list, subject="AmazonEmailer", contents=contents)
+                    else:
+                        yag.send(subject="AmazonEmailer", contents=contents)
         except FileNotFoundError:
             print("Need gmail address to send emails from.")
             
