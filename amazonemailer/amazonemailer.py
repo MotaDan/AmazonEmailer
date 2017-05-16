@@ -153,8 +153,10 @@ class AmazonEmailer:
         """Takes the private functions and stores them out to a config file."""
         makedirs(path.dirname(self._config_name), exist_ok=True)
         
+        email_address = self._email_address if self._email_address is not None else ''
+        
         with open(self._config_name, 'w') as f:
-            yaml.dump({'pages': ','.join(self._pages), 'email list': ','.join(self._email_list), 'range': ','.join(self._range), 'config name': self._config_name, 'database name': self._database_name, 'file name': self._file_name, 'email info': {'email address': self._email_address, 'email password': ''}}, f, default_flow_style=False)
+            yaml.dump({'pages': ','.join(self._pages), 'email list': ','.join(self._email_list), 'range': ','.join(self._range), 'config name': self._config_name, 'database name': self._database_name, 'file name': self._file_name, 'email info': {'email address': email_address, 'email password': ''}}, f, default_flow_style=False)
         
         
     def read_config(self):
@@ -168,7 +170,7 @@ class AmazonEmailer:
         self._config_name = config_info['config name']
         self._database_name = config_info['database name']
         self._file_name = config_info['file name']
-        self._email_address = config_info['email info']['email address']
+        self._email_address = config_info['email info']['email address'] if config_info['email info']['email address'] != '' else None
         self._email_password = config_info['email info']['email password']
         
         
@@ -190,14 +192,15 @@ class AmazonEmailer:
             self.store_email_info()
         
         try:
-            if self._email_address:
-                with yagmail.SMTP(self._email_address) as yag:
-                    contents = ["Attached are the amazon items.",  "output/AmazonItems.csv"]
-                    
-                    if len(self._email_list) > 0:
-                        yag.send(to=self._email_list, subject="AmazonEmailer", contents=contents)
-                    else:
-                        yag.send(subject="AmazonEmailer", contents=contents)
+            with yagmail.SMTP(self._email_address) as yag:
+                contents = ["Attached are the amazon items.",  "output/AmazonItems.csv"]
+                
+                if len(self._email_list) > 0:
+                    yag.send(to=self._email_list, subject="AmazonEmailer", contents=contents)
+                    print("Email sent to " + ", ".join(self._email_list))
+                else:
+                    yag.send(subject="AmazonEmailer", contents=contents)
+                    print("Email sent to " + self._email_address)
         except FileNotFoundError:
             print("Need gmail address to send emails from.")
             
