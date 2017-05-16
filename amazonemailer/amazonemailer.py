@@ -157,7 +157,7 @@ class AmazonEmailer:
         makedirs(path.dirname(self._config_name), exist_ok=True)
         
         with open(self._config_name, 'w') as f:
-            yaml.dump({'pages': (self._pages), 'email list': ','.join(self._email_list), 'range': ','.join(self._range), 'config name': self._config_name, 'database name': self._database_name, 'file name': self._file_name, 'email address': self._email_address, 'email password': ''}, f)
+            yaml.dump({'pages': ','.join(self._pages), 'email list': ','.join(self._email_list), 'range': ','.join(self._range), 'config name': self._config_name, 'database name': self._database_name, 'file name': self._file_name, 'email info': {'email address': self._email_address, 'email password': ''}}, f, default_flow_style=False)
         
         
     def read_config(self):
@@ -171,8 +171,8 @@ class AmazonEmailer:
         self._config_name = config_info['config name']
         self._database_name = config_info['database name']
         self._file_name = config_info['file name']
-        self._email_address = config_info['email address']
-        self._email_password = config_info['email password']
+        self._email_address = config_info['email info']['email address']
+        self._email_password = config_info['email info']['email password']
         
         
     def setup_config(self, pages, email_list, range, config, database, file, email_address, email_password):
