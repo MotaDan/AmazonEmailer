@@ -17,7 +17,8 @@ def test_setup_database():
     """The database is what I think it is."""
     aemailer = AmazonEmailer()
     database_name = "./tests/test_database.db"
-    aemailer.setup_config(database=database_name)
+    config_name = "./tests/test_config.yaml"
+    aemailer.setup_config(config=config_name, database=database_name)
     aemailer.setup_database()
     
     assert path.isfile(database_name)
@@ -41,6 +42,10 @@ def test_pull_items():
 def test_write_config():
     """Values are written to the config file."""
     aemailer = AmazonEmailer()
+    database_name = "./tests/test_database.db"
+    config_name = "./tests/test_config.yaml"
+    file_name = "./tests/AmazonItems"
+    aemailer.setup_config(config=config_name, database=database_name, file=file_name)
     aemailer.write_config()
     assert True
     

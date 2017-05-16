@@ -1,0 +1,9 @@
+config name: ./tests/test_config.yaml
+database name: ./tests/test_database.db
+email info:
+  email address: ''
+  email password: ''
+email list: ''
+file name: ./tests/AmazonItems
+pages: ''
+range: 1,60
