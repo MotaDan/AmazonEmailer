@@ -37,12 +37,14 @@ if __name__ == "__main__":
     parser.add_argument("-f", "--file", help="file name to be generated")
     parser.add_argument("-a", "--email_address", help="email address for the sender")
     parser.add_argument("-b", "--email_password", help="email address password for the sender")
+    parser.add_argument("-s", "--schedule", help="scheduled time to be run every day")
     args = parser.parse_args()
     
     main(args)
     
-    schedule.every().day.at("9:00").do(main, args)
-    
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
+    if args.schedule:
+        schedule.every().day.at(args.schedule).do(main, args)
+        
+        while True:
+            schedule.run_pending()
+            time.sleep(1)
