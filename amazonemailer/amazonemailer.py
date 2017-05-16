@@ -27,9 +27,6 @@ class AmazonEmailer:
 
     def setup_database(self):
         """Setting up sqlite database for items."""
-        if database_name != "":
-            self._database_name = database_name
-            
         makedirs(path.dirname(self._database_name), exist_ok=True)
         
         # Deleting the previous database to avoid duplicate entries. I don't care what items existed before.
@@ -165,9 +162,9 @@ class AmazonEmailer:
         with open(self._config_name, 'r') as f:
             config_info = yaml.load(f)
             
-        self._pages = config_info['pages'].split(',')
-        self._email_list = config_info['email list'].split(',')
-        self._range = config_info['range'].split(',')
+        self._pages = config_info['pages'].split(',') if len(config_info['pages']) > 0 else []
+        self._email_list = config_info['email list'].split(',') if len(config_info['email list']) > 0 else []
+        self._range = config_info['range'].split(',') if len(config_info['range']) > 0 else []
         self._config_name = config_info['config name']
         self._database_name = config_info['database name']
         self._file_name = config_info['file name']
@@ -191,7 +188,7 @@ class AmazonEmailer:
         """Sends output files to the emails in the list."""
         if self._email_address and keyring.get_password('yagmail', self._email_address) is None:
             self.store_email_info()
-            
+        
         try:
             with yagmail.SMTP(self._email_address) as yag:
                 contents = ["Attached are the amazon items.",  "output/AmazonItems.csv"]
@@ -202,7 +199,7 @@ class AmazonEmailer:
                     yag.send(subject="AmazonEmailer", contents=contents)
         except FileNotFoundError:
             print("Need gmail address to send emails from.")
-
+            
             
     def store_email_info(self):
         """Stores email address and password in keyring."""
