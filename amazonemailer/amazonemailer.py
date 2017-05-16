@@ -20,12 +20,12 @@ class AmazonEmailer:
         self._email_list = ''
         self._pages = ''
         self._range = ''
-        self._file_name = ''
+        self._file_name = "./output/AmazonItems"
         self._email_address = ''
         self._email_password = ''
     
 
-    def setup_database(self, database_name=""):
+    def setup_database(self):
         """Setting up sqlite database for items."""
         if database_name != "":
             self._database_name = database_name
@@ -54,13 +54,13 @@ class AmazonEmailer:
         cursor.execute(sql_command)
         
         
-    def items_to_csv(self, file_name="output/AmazonItems.csv"):
+    def items_to_csv(self):
         """Writing the items information to a csv file."""
         connection = sqlite3.connect(self._database_name)
         cursor = connection.cursor()
         
-        makedirs(path.dirname(file_name), exist_ok=True)
-        with open(file_name, 'w', newline='') as f:
+        makedirs(path.dirname(self._file_name), exist_ok=True)
+        with open(self._file_name + ".csv", 'w', newline='') as f:
             fileWriter = csv.writer(f)
             cursor.execute("""SELECT rank, name, reviewscore, price, asin, link FROM items WHERE category = 'Cell Phones & Accessories' AND rank >= ? ORDER BY rank""", (int(self._range[0]),))
             result = cursor.fetchall()
@@ -70,7 +70,7 @@ class AmazonEmailer:
                 fileWriter.writerow(item)
                 
                 
-    def items_to_xls(self, file_name="output/AmazonItems.xls"):
+    def items_to_xls(self):
         """Writing the items information to an excel file with multiple sheets."""
         connection = sqlite3.connect(self._database_name)
         cursor = connection.cursor()
@@ -93,8 +93,8 @@ class AmazonEmailer:
                 book.add_sheet(data)
                 
             # Writing the items information to an excel file with multiple sheets
-            makedirs(path.dirname(file_name), exist_ok=True)
-            with open(file_name, 'wb') as f:
+            makedirs(path.dirname(self._file_name), exist_ok=True)
+            with open(self._file_name + ".xls", 'wb') as f:
                 f.write(book.xls)
             
             
