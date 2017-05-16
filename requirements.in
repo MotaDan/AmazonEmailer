@@ -4,3 +4,4 @@ requests
 tablib
 yagmail[all]
 PyYAML
+schedule
