@@ -1,0 +1,9 @@
+config name: ./amazonemailer_config.yaml
+database name: ./output/amazonBestSellers.db
+email info:
+  email address: ''
+  email password: ''
+email list: ''
+file name: ./output/AmazonItems
+pages: ''
+range: 1,60

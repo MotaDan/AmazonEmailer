@@ -16,10 +16,10 @@ class AmazonEmailer:
     def __init__(self):
         """Setting up private variables."""
         self._database_name = "output/amazonBestSellers.db"
-        self._config_name = "./amzonemailer_config.yaml"
+        self._config_name = "./amazonemailer_config.yaml"
         self._email_list = ''
         self._pages = ''
-        self._range = ''
+        self._range = [1, 60]
         self._file_name = "./output/AmazonItems"
         self._email_address = ''
         self._email_password = ''
@@ -161,10 +161,10 @@ class AmazonEmailer:
         """Reads in a config file and stores all the values in the private variables."""
         with open(self._config_name, 'r') as f:
             config_info = yaml.load(f)
-            
+        
         self._pages = config_info['pages'].split(',') if len(config_info['pages']) > 0 else []
         self._email_list = config_info['email list'].split(',') if len(config_info['email list']) > 0 else []
-        self._range = config_info['range'].split(',') if len(config_info['range']) > 0 else []
+        self._range = config_info['range'].split(',') if len(config_info['range']) > 0 else self._range
         self._config_name = config_info['config name']
         self._database_name = config_info['database name']
         self._file_name = config_info['file name']
