@@ -17,7 +17,8 @@ def test_setup_database():
     """The database is what I think it is."""
     aemailer = AmazonEmailer()
     database_name = "./tests/test_database.db"
-    aemailer.setup_database(database_name)
+    aemailer.setup_config(database=database_name)
+    aemailer.setup_database()
     
     assert path.isfile(database_name)
 

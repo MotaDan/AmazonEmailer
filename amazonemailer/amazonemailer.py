@@ -15,11 +15,11 @@ class AmazonEmailer:
     
     def __init__(self):
         """Setting up private variables."""
-        self._database_name = "output/amazonBestSellers.db"
+        self._database_name = "./output/amazonBestSellers.db"
         self._config_name = "./amazonemailer_config.yaml"
         self._email_list = ''
         self._pages = ''
-        self._range = [1, 60]
+        self._range = ['1', '60']
         self._file_name = "./output/AmazonItems"
         self._email_address = ''
         self._email_password = ''
@@ -174,7 +174,7 @@ class AmazonEmailer:
         self._email_password = config_info['email info']['email password']
         
         
-    def setup_config(self, pages, email_list, range, config, database, file, email_address, email_password):
+    def setup_config(self=None, pages=None, email_list=None, range=None, config=None, database=None, file=None, email_address=None, email_password=None):
         """Get all available information from passed in config file."""
         self._pages = pages.split(',') if pages is not None else self._pages
         self._email_list = email_list.split(',') if email_list is not None else self._email_list
