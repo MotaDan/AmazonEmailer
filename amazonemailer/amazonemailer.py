@@ -86,10 +86,10 @@ class AmazonEmailer:
             book = tablib.Databook()
 
             for category in categories:
-                cursor.execute("""SELECT rank, name, reviewscore, price, asin, link, category, reviewers FROM items WHERE category = ? AND rank >= ? AND rank <= ?ORDER BY rank""", (str(category[0]), int(self._range[0]), int(self._range[1])))
+                cursor.execute("""SELECT rank, name, price, asin, link, category, reviewers FROM items WHERE category = ? AND rank >= ? AND rank <= ?ORDER BY rank""", (str(category[0]), int(self._range[0]), int(self._range[1])))
                 items = cursor.fetchall()
                 data = tablib.Dataset(title = category[0][-31:])
-                data.headers = ["BSR Rank", "Name", "Review Score", "Price", "ASIN", "Link", "Item Category", "# of Reviews"]
+                data.headers = ["BSR Rank", "Name", "Price", "ASIN", "Link", "Item Category", "# of Reviews"]
                 
                 for item in items:
                     data.append(item)
