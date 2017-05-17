@@ -14,12 +14,7 @@ def main(args):
     aemailer.write_config()
     
     aemailer.setup_database()
-    
-    pages = ('https://www.amazon.com/gp/bestsellers/wireless/ref=sv_cps_6', 
-             'https://www.amazon.com/Best-Sellers-Cell-Phones-Accessories-Unlocked/zgbs/wireless/2407749011/ref=zg_bs_nav_cps_1_cps', 
-             'https://www.amazon.com/Best-Sellers-Cell-Phones-Accessories-Phone-Cases-Holsters-Clips/zgbs/wireless/2407760011/ref=zg_bs_nav_cps_2_2407749011')
-
-    aemailer.pull_items(pages)
+    aemailer.pull_items()
     
     aemailer.items_to_xls()
     aemailer.items_to_csv()
