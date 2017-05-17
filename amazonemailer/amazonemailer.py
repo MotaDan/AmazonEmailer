@@ -56,10 +56,13 @@ class AmazonEmailer:
         connection = sqlite3.connect(self._database_name)
         cursor = connection.cursor()
         
+        cursor.execute("""SELECT category FROM items GROUP BY category ORDER BY item_number""")
+        categories = cursor.fetchall()
+        
         makedirs(path.dirname(self._file_name), exist_ok=True)
         with open(self._file_name + ".csv", 'w', newline='') as f:
             fileWriter = csv.writer(f)
-            cursor.execute("""SELECT rank, name, reviewscore, price, asin, link FROM items WHERE category = 'Cell Phones & Accessories' AND rank >= ? ORDER BY rank""", (int(self._range[0]),))
+            cursor.execute("""SELECT rank, name, reviewscore, price, asin, link FROM items WHERE category = ? AND rank >= ? AND rank <= ?ORDER BY rank""", (str(categories[0][0]), int(self._range[0]), int(self._range[1])))
             result = cursor.fetchall()
             
             fileWriter.writerow(("Rank", "Name", "Review Score", "Price", "ASIN", "Link"))
@@ -79,7 +82,7 @@ class AmazonEmailer:
             book = tablib.Databook()
 
             for category in categories:
-                cursor.execute("""SELECT rank, name, reviewscore, price, asin, link FROM items WHERE category = ? AND rank >= ? ORDER BY rank""", (str(category[0]), int(self._range[0])))
+                cursor.execute("""SELECT rank, name, reviewscore, price, asin, link FROM items WHERE category = ? AND rank >= ? AND rank <= ?ORDER BY rank""", (str(category[0]), int(self._range[0]), int(self._range[1])))
                 items = cursor.fetchall()
                 data = tablib.Dataset(title = category[0][:31])
                 data.headers = ["Rank", "Name", "Review Score", "Price", "ASIN", "Link"]
@@ -104,12 +107,12 @@ class AmazonEmailer:
         return asin
         
         
-    def pull_items(self, pages=[]):
+    def pull_items(self):
         """Pulls items down from amazon for the given pages."""
         connection = sqlite3.connect(self._database_name)
         cursor = connection.cursor()
         
-        for page in pages:
+        for page in self._pages:
             r = requests.get(page)
             first_page_num = ceil(int(self._range[0]) / 20)
             
@@ -193,7 +196,7 @@ class AmazonEmailer:
         
         try:
             with yagmail.SMTP(self._email_address) as yag:
-                contents = ["Attached are the amazon items.",  "output/AmazonItems.csv"]
+                contents = ["Attached are the amazon items.",  "output/AmazonItems.csv", "output/AmazonItems.xls"]
                 
                 if len(self._email_list) > 0:
                     yag.send(to=self._email_list, subject="AmazonEmailer", contents=contents)

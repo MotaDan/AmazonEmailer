@@ -19,8 +19,9 @@ def config_setup():
     database_name = "./tests/database_test.db"
     config_name = "./tests/config_test.yaml"
     file_name = "./tests/AmazonItems_test"
+    range = "15,50"
     pages = """https://www.amazon.com/gp/bestsellers/wireless/ref=sv_cps_6, https://www.amazon.com/Best-Sellers-Cell-Phones-Accessories-Unlocked/zgbs/wireless/2407749011/ref=zg_bs_nav_cps_1_cps, https://www.amazon.com/Best-Sellers-Cell-Phones-Accessories-Phone-Cases-Holsters-Clips/zgbs/wireless/2407760011/ref=zg_bs_nav_cps_2_2407749011"""
-    aemailer.setup_config(config=config_name, database=database_name, file=file_name, pages=pages)
+    aemailer.setup_config(config=config_name, database=database_name, file=file_name, pages=pages, range=range)
     return aemailer
     
     
@@ -39,6 +40,7 @@ def test_items_to_csv(config_setup):
     aemailer = config_setup
     og_file_name = aemailer._file_name
     aemailer._file_name = "./tests/test_items_to_csv"
+    aemailer._pages = "https://www.amazon.com/gp/bestsellers/wireless/ref=sv_cps_6"
     aemailer.items_to_csv()
     
     assert path.isfile(aemailer._file_name + ".csv")
@@ -104,7 +106,7 @@ def test_read_config():
     assert aemailer._config_name == "./tests/config_test.yaml"
     assert aemailer._email_list == []
     assert aemailer._pages == ['https://www.amazon.com/gp/bestsellers/wireless/ref=sv_cps_6', ' https://www.amazon.com/Best-Sellers-Cell-Phones-Accessories-Unlocked/zgbs/wireless/2407749011/ref=zg_bs_nav_cps_1_cps', ' https://www.amazon.com/Best-Sellers-Cell-Phones-Accessories-Phone-Cases-Holsters-Clips/zgbs/wireless/2407760011/ref=zg_bs_nav_cps_2_2407749011']
-    assert aemailer._range == ['1', '60']
+    assert aemailer._range == ['15', '50']
     assert aemailer._file_name == "./tests/AmazonItems_test"
     assert aemailer._email_address == None
     assert aemailer._email_password == ''
