@@ -9,6 +9,7 @@ import yagmail
 import keyring
 import yaml
 from math import ceil
+import time
 
 
 class AmazonEmailer:
@@ -46,6 +47,7 @@ class AmazonEmailer:
         link TEXT, 
         rank INTEGER, 
         asin TEXT, 
+        reviewers INTEGER, 
         unique (name, reviewScore, price, link, rank, asin));"""
 
         cursor.execute(sql_command)
@@ -60,14 +62,16 @@ class AmazonEmailer:
         categories = cursor.fetchall()
         
         makedirs(path.dirname(self._file_name), exist_ok=True)
-        with open(self._file_name + ".csv", 'w', newline='') as f:
-            fileWriter = csv.writer(f)
-            cursor.execute("""SELECT rank, name, reviewscore, price, asin, link FROM items WHERE category = ? AND rank >= ? AND rank <= ?ORDER BY rank""", (str(categories[0][0]), int(self._range[0]), int(self._range[1])))
-            result = cursor.fetchall()
-            
-            fileWriter.writerow(("Rank", "Name", "Review Score", "Price", "ASIN", "Link"))
-            for item in result:
-                fileWriter.writerow(item)
+        
+        if len(categories) > 0:
+            with open(self._file_name + ".csv", 'w', newline='') as f:
+                fileWriter = csv.writer(f)
+                cursor.execute("""SELECT rank, name, reviewscore, price, asin, link, category, reviewers FROM items WHERE category = ? AND rank >= ? AND rank <= ? ORDER BY rank""", (str(categories[0][0]), int(self._range[0]), int(self._range[1])))
+                result = cursor.fetchall()
+                
+                fileWriter.writerow(("BSR Rank", "Name", "Review Score", "Price", "ASIN", "Link", "Category", "# of Reviews"))
+                for item in result:
+                    fileWriter.writerow(item)
                 
                 
     def items_to_xls(self):
@@ -82,10 +86,10 @@ class AmazonEmailer:
             book = tablib.Databook()
 
             for category in categories:
-                cursor.execute("""SELECT rank, name, reviewscore, price, asin, link FROM items WHERE category = ? AND rank >= ? AND rank <= ?ORDER BY rank""", (str(category[0]), int(self._range[0]), int(self._range[1])))
+                cursor.execute("""SELECT rank, name, reviewscore, price, asin, link, category, reviewers FROM items WHERE category = ? AND rank >= ? AND rank <= ?ORDER BY rank""", (str(category[0]), int(self._range[0]), int(self._range[1])))
                 items = cursor.fetchall()
-                data = tablib.Dataset(title = category[0][:31])
-                data.headers = ["Rank", "Name", "Review Score", "Price", "ASIN", "Link"]
+                data = tablib.Dataset(title = category[0][-31:])
+                data.headers = ["BSR Rank", "Name", "Review Score", "Price", "ASIN", "Link", "Item Category", "# of Reviews"]
                 
                 for item in items:
                     data.append(item)
@@ -109,6 +113,69 @@ class AmazonEmailer:
         
     def pull_items(self):
         """Pulls items down from amazon for the given pages."""
+        connection = sqlite3.connect(self._database_name)
+        cursor = connection.cursor()
+        
+        for page in self._pages:
+            r = requests.get(page)
+            asoup = BeautifulSoup(r.text, 'lxml')
+            items_list = asoup.find_all('li', class_="s-result-item")
+            first_page_num = ceil(int(self._range[0]) / len(items_list))
+            last_page_num = ceil(int(self._range[1]) / len(items_list))
+            
+            # Getting the category
+            category_chain = asoup.find('h2', id="s-result-count").span.contents
+            categorystr = ''
+            for category in category_chain:
+               categorystr += category.string
+            categorystr = categorystr.replace(':', '>')
+            
+            # Fast forwarding to the first page in the range
+            next_page = "https://www.amazon.com" + asoup.find('span', class_="pagnLink").contents[0]['href']
+            first_valid_page = next_page.replace("page=2", "page={}".format(first_page_num))
+            r = requests.get(first_valid_page)
+            
+            # Going through all the pages and getting their items.
+            for page_num in range(first_page_num, last_page_num+1):
+                asoup = BeautifulSoup(r.text, 'lxml')
+                try:
+                    next_page = "https://www.amazon.com" + asoup.find('a', id="pagnNextLink")['href']
+                except TypeError:
+                    print("Error: Range higher than number of items.")
+                    print(categorystr)
+                    break
+                
+                # zg_itemImmersion is the tag that contains all the data on an item.
+                items = asoup.find_all('li', class_="s-result-item")
+                
+                # Scrapping the item information and adding it to the database.
+                for item in items:
+                    linkstr = item.find('a', class_="a-link-normal a-text-normal")['href']
+                    namestr = item.find('h2').string
+                    psbl_review_score = item.find('i', class_=re.compile("a-icon a-icon-star a-star-."))
+                    reviewscorestr = psbl_review_score.string if psbl_review_score is not None else ""
+                    psbl_num_reviewers_tag = item.find('a', class_="a-size-small a-link-normal a-text-normal")
+                    if psbl_num_reviewers_tag and "#customerReviews" in psbl_num_reviewers_tag['href']:
+                        reviewersstr = item.find('a', class_="a-size-small a-link-normal a-text-normal").string
+                    else:
+                        reviewersstr = '0'
+                    whole = item.find('span', class_="sx-price-whole").string if item.find('span', class_="sx-price-whole") is not None else '00'
+                    fract = item.find('sup', class_="sx-price-fractional").string if item.find('sup', class_="sx-price-fractional") is not None else '00'
+                    pricestr = "{}.{}".format(whole, fract)
+                    asinstr = item['data-asin']
+                    rankstr = item['id'][len("result_"):]
+                    
+                    sql_command = """INSERT  OR IGNORE INTO items (item_number, category, name, reviewscore, price, link, rank, asin, reviewers)
+                    VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?);"""
+                    cursor.execute(sql_command, (categorystr, namestr, reviewscorestr, pricestr, linkstr, rankstr, asinstr, reviewersstr))
+
+                connection.commit()
+                time.sleep(1)
+                r = requests.get(next_page)
+        
+        
+    def pull_items_best_sellers(self):
+        """Pulls items down from amazon for the given top 100 best sellers pages."""
         connection = sqlite3.connect(self._database_name)
         cursor = connection.cursor()
         

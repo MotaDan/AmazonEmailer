@@ -66,7 +66,7 @@ def test_items_to_xls(config_setup):
     remove(aemailer._file_name + ".xls")
     
     
-def test_pull_items(config_setup):
+def test_pull_items_best_sellers(config_setup):
     """Items from given page and range are returned."""
     aemailer = config_setup
     aemailer._file_name = "./tests/test_pull_items"
