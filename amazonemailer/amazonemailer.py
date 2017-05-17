@@ -74,7 +74,7 @@ class AmazonEmailer:
         
         cursor.execute("""SELECT category FROM items GROUP BY category ORDER BY item_number""")
         categories = cursor.fetchall()
-
+        
         if len(categories) > 0:
             book = tablib.Databook()
 
@@ -174,7 +174,7 @@ class AmazonEmailer:
         self._email_password = config_info['email info']['email password']
         
         
-    def setup_config(self=None, pages=None, email_list=None, range=None, config=None, database=None, file=None, email_address=None, email_password=None):
+    def setup_config(self, pages=None, email_list=None, range=None, config=None, database=None, file=None, email_address=None, email_password=None):
         """Get all available information from passed in config file."""
         self._pages = pages.split(',') if pages is not None else self._pages
         self._email_list = email_list.split(',') if email_list is not None else self._email_list
