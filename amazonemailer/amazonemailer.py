@@ -17,7 +17,7 @@ class AmazonEmailer:
     def __init__(self):
         """Setting up private variables."""
         self._database_name = "./output/amazonBestSellers.db"
-        self._config_name = "./amazonemailer_config.yaml"
+        self._config_name = "./amazonemailer_config.txt"
         self._email_list = ''
         self._pages = ''
         self._range = ['1', '60']

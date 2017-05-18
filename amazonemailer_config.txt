@@ -1,4 +1,4 @@
-config name: ./amazonemailer_config.yaml
+config name: ./amazonemailer_config.txt
 database name: ./output/amazonBestSellers.db
 email info:
   email address: ''
