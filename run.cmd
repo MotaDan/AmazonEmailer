@@ -1,2 +1,2 @@
-.\env\Scripts\activate
+CALL .\env\Scripts\activate
 python -m amazonemailer
