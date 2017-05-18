@@ -5,12 +5,10 @@ import schedule
 import time
 
 
-def main(args):
+def main(args, aemailer):
     """Sets up database, gets items, generates files and emails them."""
-    aemailer = AmazonEmailer()
-    
     aemailer.read_config()
-    aemailer.setup_config(pages=args.pages, email_list=args.email_list, range=args.range, config=args.config, database=args.database, file=args.file, email_address=args.email_address, email_password=args.email_password)
+    aemailer.setup_config(pages=args.pages, email_list=args.email_list, range=args.range, config=args.config, database=args.database, file=args.file, email_address=args.email_address, email_password=args.email_password, time=args.time, frequency=args.frequency)
     aemailer.write_config()
     
     aemailer.setup_database()
@@ -32,14 +30,18 @@ if __name__ == "__main__":
     parser.add_argument("-f", "--file", help="file name to be generated")
     parser.add_argument("-a", "--email_address", help="email address for the sender")
     parser.add_argument("-b", "--email_password", help="email address password for the sender")
-    parser.add_argument("-s", "--schedule", help="scheduled time to be run every day")
+    parser.add_argument("-t", "--time", help="time to be run")
+    parser.add_argument("-q", "--frequency", help="how often the email is sent. daily, weekly, monthly")
     args = parser.parse_args()
     
-    main(args)
+    aemailer = AmazonEmailer()
     
-    if args.schedule:
-        schedule.every().day.at(args.schedule).do(main, args)
-        
-        while True:
-            schedule.run_pending()
-            time.sleep(1)
+    main(args, aemailer)
+    
+    frequency = {'daily': 1, 'weekly': 7, 'monthly': 30}
+    
+    schedule.every(frequency[aemailer._frequency]).days.at(aemailer._time).do(main, args, aemailer)
+    
+    while True:
+        schedule.run_pending()
+        time.sleep(1)

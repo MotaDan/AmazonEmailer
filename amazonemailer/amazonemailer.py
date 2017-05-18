@@ -24,6 +24,8 @@ class AmazonEmailer:
         self._file_name = "./output/AmazonItems"
         self._email_address = ''
         self._email_password = ''
+        self._time = "9:00"
+        self._frequency = "daily"
     
 
     def setup_database(self):
@@ -226,7 +228,7 @@ class AmazonEmailer:
         email_address = self._email_address if self._email_address is not None else ''
         
         with open(self._config_name, 'w') as f:
-            yaml.dump({'pages': ','.join(self._pages), 'email list': ','.join(self._email_list), 'range': ','.join(self._range), 'config name': self._config_name, 'database name': self._database_name, 'file name': self._file_name, 'email info': {'email address': email_address, 'email password': ''}}, f, default_flow_style=False)
+            yaml.dump({'pages': ','.join(self._pages), 'email list': ','.join(self._email_list), 'range': ','.join(self._range), 'config name': self._config_name, 'database name': self._database_name, 'file name': self._file_name, 'email info': {'email address': email_address, 'email password': ''}, 'time': self._time, 'frequency': self._frequency}, f, default_flow_style=False)
         
         
     def read_config(self):
@@ -242,9 +244,11 @@ class AmazonEmailer:
         self._file_name = config_info['file name']
         self._email_address = config_info['email info']['email address'] if config_info['email info']['email address'] != '' else None
         self._email_password = config_info['email info']['email password']
+        self._time = config_info['time']
+        self._frequency = config_info['frequency']
         
         
-    def setup_config(self, pages=None, email_list=None, range=None, config=None, database=None, file=None, email_address=None, email_password=None):
+    def setup_config(self, pages=None, email_list=None, range=None, config=None, database=None, file=None, email_address=None, email_password=None, time=None, frequency=None):
         """Get all available information from passed in config file."""
         self._pages = pages.split(',') if pages is not None else self._pages
         self._email_list = email_list.split(',') if email_list is not None else self._email_list
@@ -254,6 +258,8 @@ class AmazonEmailer:
         self._file_name = file if file is not None else self._file_name
         self._email_address = email_address if email_address is not None else self._email_address
         self._email_password = email_password if email_password is not None else self._email_password
+        self._time = time if time is not None else self._time
+        self._frequency = frequency if frequency is not None else self._frequency
         
         
     def send_email(self):

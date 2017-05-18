@@ -5,6 +5,8 @@ email info:
   email password: ''
 email list: ''
 file name: ./output/AmazonItems
+frequency: daily
 pages: https://www.amazon.com/s/ref=sr_st?rh=n%3A7141123011%2Cn%3A7147441011%2Cn%3A1040658%2Cn%3A2476517011%2Cn%3A1045624&qid=1495030924&sort=smooth-review-rank,
   https://www.amazon.com/s/ref=sr_pg_1?rh=n%3A2335752011%2Cn%3A%212335753011%2Cn%3A2407755011%2Cn%3A2407758011%2Cn%3A7073960011%2Cp_n_feature_nine_browse-bin%3A15284134011&ie=UTF8&qid=1495041278
 range: 50,100
+time: '9:00'
