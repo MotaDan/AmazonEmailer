@@ -71,7 +71,7 @@ class AmazonEmailer:
                 cursor.execute("""SELECT rank, name, reviewscore, price, asin, link, category FROM items WHERE category = ? AND rank >= ? AND rank <= ? ORDER BY rank""", (str(categories[0][0]), int(self._range[0]), int(self._range[1])))
                 result = cursor.fetchall()
                 
-                fileWriter.writerow(("BSR Rank", "Name", "Review Score", "Price", "ASIN", "Link", "Category""))
+                fileWriter.writerow(("BSR Rank", "Name", "Review Score", "Price", "ASIN", "Link", "Category"))
                 for item in result:
                     fileWriter.writerow(item)
                 
