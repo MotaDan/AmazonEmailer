@@ -115,6 +115,8 @@ class AmazonEmailer:
         
     def pull_items(self):
         """Pulls items down from amazon for the given pages."""
+        print("Retrieving Items...")
+        
         connection = sqlite3.connect(self._database_name)
         cursor = connection.cursor()
         
@@ -269,7 +271,7 @@ class AmazonEmailer:
         
         try:
             with yagmail.SMTP(self._email_address) as yag:
-                contents = ["Attached are the amazon items.",  "output/AmazonItems.csv", "output/AmazonItems.xls"]
+                contents = ["Attached are the amazon items.",  "output/AmazonItems.xls"]
                 
                 if len(self._email_list) > 0:
                     yag.send(to=self._email_list, subject="AmazonEmailer", contents=contents)
