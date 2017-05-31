@@ -237,17 +237,21 @@ class AmazonEmailer:
         """Reads in a config file and stores all the values in the private variables."""
         with open(self._config_name, 'r') as f:
             config_info = yaml.load(f)
-        
-        self._pages = config_info['pages'].split(',') if len(config_info['pages']) > 0 else []
-        self._email_list = config_info['email list'].split(',') if len(config_info['email list']) > 0 else []
-        self._range = config_info['range'].split(',') if len(config_info['range']) > 0 else self._range
-        self._config_name = config_info['config name']
-        self._database_name = config_info['database name']
-        self._file_name = config_info['file name']
-        self._email_address = config_info['email info']['email address'] if config_info['email info']['email address'] != '' else None
-        self._email_password = config_info['email info']['email password']
-        self._time = config_info['time']
-        self._frequency = config_info['frequency']
+
+        try:
+            self._pages = config_info['pages'].split(',') if len(config_info['pages']) > 0 else []
+            self._email_list = config_info['email list'].split(',') if len(config_info['email list']) > 0 else []
+            self._range = config_info['range'].split(',') if len(config_info['range']) > 0 else self._range
+            self._config_name = config_info['config name']
+            self._database_name = config_info['database name']
+            self._file_name = config_info['file name']
+            self._email_address = config_info['email info']['email address'] if config_info['email info']['email address'] != '' else None
+            self._email_password = config_info['email info']['email password']
+            self._time = config_info['time']
+            self._frequency = config_info['frequency']
+        except KeyError as e:
+            print("Incomplete config file.")
+            print(e)
         
         
     def setup_config(self, pages=None, email_list=None, range=None, config=None, database=None, file=None, email_address=None, email_password=None, time=None, frequency=None):

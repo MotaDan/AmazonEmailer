@@ -69,8 +69,10 @@ def test_items_to_xls(config_setup):
 def test_pull_items_best_sellers(config_setup):
     """Items from given page and range are returned."""
     aemailer = config_setup
+    aemailer._database_name = "./tests/test_pull_items_best_sellers.db"
     aemailer._file_name = "./tests/test_pull_items"
-    aemailer.pull_items()
+    aemailer.setup_database()
+    aemailer.pull_items_best_sellers()
     aemailer.items_to_xls()
     aemailer.items_to_csv()
     
@@ -80,6 +82,7 @@ def test_pull_items_best_sellers(config_setup):
         
     remove(aemailer._file_name + ".xls")
     remove(aemailer._file_name + ".csv")
+    remove(aemailer._database_name)
     
     
 def test_write_config(config_setup):
@@ -136,7 +139,6 @@ def test_setup_config():
     assert aemailer._email_password == 'password'
     
 
-@pytest.mark.skip
 def test_send_email(capfd, config_setup):
     """Emails are sent to the passed in list. I don't have a good way to test this so it just goes with no email."""
     aemailer = config_setup
