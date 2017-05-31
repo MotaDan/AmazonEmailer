@@ -21,7 +21,7 @@ def main(arguments, emailer):
     emailer.write_config()
     
     emailer.setup_database()
-    emailer.pull_items()
+    emailer.pull_items_search()
     
     emailer.items_to_xls()
     emailer.items_to_csv()
