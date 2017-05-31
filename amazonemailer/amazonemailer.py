@@ -301,3 +301,11 @@ class AmazonEmailer:
         """Stores email address and password in keyring."""
         yagmail.register(self._email_address, self._email_password)
         print("Email address and password stored to keyring.")
+
+    @property
+    def frequency(self):
+        return self._frequency
+
+    @property
+    def time(self):
+        return self._time

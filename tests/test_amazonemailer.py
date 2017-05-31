@@ -10,20 +10,23 @@ def test_get_asin():
     expected_asin = "B010S9N6OO"
     
     assert expected_asin == aemailer.get_asin(address)
-    
-    
+
+
 @pytest.fixture
 def config_setup():
     aemailer = AmazonEmailer()
     database_name = "./tests/database_test.db"
     config_name = "./tests/config_test.yaml"
     file_name = "./tests/AmazonItems_test"
-    range = "15,50"
+    items_range = "15,50"
+    # noinspection PyPep8
     pages = """https://www.amazon.com/gp/bestsellers/wireless/ref=sv_cps_6, https://www.amazon.com/Best-Sellers-Cell-Phones-Accessories-Unlocked/zgbs/wireless/2407749011/ref=zg_bs_nav_cps_1_cps, https://www.amazon.com/Best-Sellers-Cell-Phones-Accessories-Phone-Cases-Holsters-Clips/zgbs/wireless/2407760011/ref=zg_bs_nav_cps_2_2407749011"""
-    aemailer.setup_config(config=config_name, database=database_name, file=file_name, pages=pages, items_range=range)
+    aemailer.setup_config(config=config_name, database=database_name, file=file_name,
+                          pages=pages, items_range=items_range)
     return aemailer
-    
-    
+
+
+# noinspection PyShadowingNames,PyProtectedMember
 def test_setup_database(config_setup):
     """The database is what I think it is."""
     aemailer = config_setup
@@ -33,7 +36,8 @@ def test_setup_database(config_setup):
     assert path.isfile(aemailer._database_name)
     remove(aemailer._database_name)
 
-    
+
+# noinspection PyShadowingNames,PyProtectedMember
 def test_items_to_csv(config_setup):
     """The items are stored in a csv file."""
     aemailer = config_setup
@@ -48,8 +52,9 @@ def test_items_to_csv(config_setup):
         assert new.read() == original.read()
     
     remove(aemailer._file_name + ".csv")
-    
-    
+
+
+# noinspection PyShadowingNames,PyProtectedMember
 def test_items_to_xls(config_setup):
     """The items are stored in a xls file."""
     aemailer = config_setup
@@ -63,8 +68,9 @@ def test_items_to_xls(config_setup):
         assert new.read() == original.read()
     
     remove(aemailer._file_name + ".xls")
-    
-    
+
+
+# noinspection PyShadowingNames,PyProtectedMember
 def test_pull_items_best_sellers(config_setup):
     """Items from given page and range are returned."""
     aemailer = config_setup
@@ -82,8 +88,9 @@ def test_pull_items_best_sellers(config_setup):
     remove(aemailer._file_name + ".xls")
     remove(aemailer._file_name + ".csv")
     remove(aemailer._database_name)
-    
-    
+
+
+# noinspection PyShadowingNames,PyProtectedMember
 def test_write_config(config_setup):
     """Values are written to the config file."""
     aemailer = config_setup
@@ -96,8 +103,9 @@ def test_write_config(config_setup):
         assert new.readlines()[1:] == original.readlines()[1:]
     
     remove(aemailer._config_name)
-    
-    
+
+
+# noinspection PyProtectedMember,PyProtectedMember
 def test_read_config():
     """Values are read from the config file."""
     aemailer = AmazonEmailer()
@@ -107,37 +115,44 @@ def test_read_config():
     assert aemailer._database_name == "./tests/database_test.db"
     assert aemailer._config_name == "./tests/config_test.yaml"
     assert aemailer._email_list == []
+    # noinspection PyPep8
     assert aemailer._pages == ['https://www.amazon.com/gp/bestsellers/wireless/ref=sv_cps_6', ' https://www.amazon.com/Best-Sellers-Cell-Phones-Accessories-Unlocked/zgbs/wireless/2407749011/ref=zg_bs_nav_cps_1_cps', ' https://www.amazon.com/Best-Sellers-Cell-Phones-Accessories-Phone-Cases-Holsters-Clips/zgbs/wireless/2407760011/ref=zg_bs_nav_cps_2_2407749011']
     assert aemailer._range == ['15', '50']
     assert aemailer._file_name == "./tests/AmazonItems_test"
-    assert aemailer._email_address == None
+    assert aemailer._email_address is None
     assert aemailer._email_password == ''
-    
-    
+
+
+# noinspection PyProtectedMember,PyProtectedMember
 def test_setup_config():
     """Config is read in and everything is set up."""
     aemailer = AmazonEmailer()
     database_name = "./tests/database_test.db"
     config_name = "./tests/config_test.yaml"
     email_list = "Test@gmail.com,Test2@gmail.com"
+    # noinspection PyPep8
     pages = """https://www.amazon.com/gp/bestsellers/wireless/ref=sv_cps_6, https://www.amazon.com/Best-Sellers-Cell-Phones-Accessories-Unlocked/zgbs/wireless/2407749011/ref=zg_bs_nav_cps_1_cps, https://www.amazon.com/Best-Sellers-Cell-Phones-Accessories-Phone-Cases-Holsters-Clips/zgbs/wireless/2407760011/ref=zg_bs_nav_cps_2_2407749011"""
-    range = "1,50"
+    items_range = "1,50"
     file_name = "./tests/AmazonItems_test"
     email_address = "sender@gmail.com"
     email_password = "password"
     
-    aemailer.setup_config(pages=pages, email_list=email_list, items_range=range, config=config_name, database=database_name, file=file_name, email_address=email_address, email_password=email_password)
+    aemailer.setup_config(pages=pages, email_list=email_list, items_range=items_range, config=config_name,
+                          database=database_name, file=file_name, email_address=email_address,
+                          email_password=email_password)
     
     assert aemailer._database_name == "./tests/database_test.db"
     assert aemailer._config_name == "./tests/config_test.yaml"
     assert aemailer._email_list == ['Test@gmail.com', 'Test2@gmail.com']
+    # noinspection PyPep8
     assert aemailer._pages == ['https://www.amazon.com/gp/bestsellers/wireless/ref=sv_cps_6', ' https://www.amazon.com/Best-Sellers-Cell-Phones-Accessories-Unlocked/zgbs/wireless/2407749011/ref=zg_bs_nav_cps_1_cps', ' https://www.amazon.com/Best-Sellers-Cell-Phones-Accessories-Phone-Cases-Holsters-Clips/zgbs/wireless/2407760011/ref=zg_bs_nav_cps_2_2407749011']
     assert aemailer._range == ['1', '50']
     assert aemailer._file_name == "./tests/AmazonItems_test"
     assert aemailer._email_address == 'sender@gmail.com'
     assert aemailer._email_password == 'password'
-    
 
+
+# noinspection PyShadowingNames
 def test_send_email(capfd, config_setup):
     """Emails are sent to the passed in list. I don't have a good way to test this so it just goes with no email."""
     aemailer = config_setup
@@ -146,4 +161,3 @@ def test_send_email(capfd, config_setup):
     out, _ = capfd.readouterr()
     
     assert out == "Need gmail address to send emails from.\n"
-    

@@ -5,27 +5,36 @@ import schedule
 import time
 
 
-def main(args, aemailer):
+def main(arguments, emailer):
     """Sets up database, gets items, generates files and emails them."""
-    aemailer.read_config()
-    aemailer.setup_config(pages=args.pages, email_list=args.email_list, items_range=args.range, config=args.config, database=args.database, file=args.file, email_address=args.email_address, email_password=args.email_password, send_time=args.time, frequency=args.frequency)
-    aemailer.write_config()
+    emailer.read_config()
+    emailer.setup_config(pages=arguments.pages,
+                         email_list=arguments.email_list,
+                         items_range=arguments.range,
+                         config=arguments.config,
+                         database=arguments.database,
+                         file=arguments.file,
+                         email_address=arguments.email_address,
+                         email_password=arguments.email_password,
+                         send_time=arguments.time,
+                         frequency=arguments.frequency)
+    emailer.write_config()
     
-    aemailer.setup_database()
-    aemailer.pull_items()
+    emailer.setup_database()
+    emailer.pull_items()
     
-    aemailer.items_to_xls()
-    aemailer.items_to_csv()
+    emailer.items_to_xls()
+    emailer.items_to_csv()
 
-    aemailer.send_email()
+    emailer.send_email()
     
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="gets items from amazon and sends out an email with the items")
     parser.add_argument("-c", "--config", help="location of config file")
-    parser.add_argument("-e", "--email_list", help="email addresses items should be sent to, comma seperated")
-    parser.add_argument("-p", "--pages", help="pages that should be checked for items, comma seperated")
-    parser.add_argument("-r", "--range", help="range of rankings that should be returned, comma seperated")
+    parser.add_argument("-e", "--email_list", help="email addresses items should be sent to, comma separated")
+    parser.add_argument("-p", "--pages", help="pages that should be checked for items, comma separated")
+    parser.add_argument("-r", "--range", help="range of rankings that should be returned, comma separated")
     parser.add_argument("-d", "--database", help="database name to be generated")
     parser.add_argument("-f", "--file", help="file name to be generated")
     parser.add_argument("-a", "--email_address", help="email address for the sender")
@@ -40,7 +49,7 @@ if __name__ == "__main__":
     
     frequency = {'daily': 1, 'weekly': 7, 'monthly': 30}
     
-    schedule.every(frequency[aemailer._frequency]).days.at(aemailer._time).do(main, args, aemailer)
+    schedule.every(frequency[aemailer.frequency]).days.at(aemailer.time).do(main, args, aemailer)
     
     while True:
         schedule.run_pending()
