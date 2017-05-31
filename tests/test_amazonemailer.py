@@ -20,7 +20,7 @@ def config_setup():
     file_name = "./tests/AmazonItems_test"
     range = "15,50"
     pages = """https://www.amazon.com/gp/bestsellers/wireless/ref=sv_cps_6, https://www.amazon.com/Best-Sellers-Cell-Phones-Accessories-Unlocked/zgbs/wireless/2407749011/ref=zg_bs_nav_cps_1_cps, https://www.amazon.com/Best-Sellers-Cell-Phones-Accessories-Phone-Cases-Holsters-Clips/zgbs/wireless/2407760011/ref=zg_bs_nav_cps_2_2407749011"""
-    aemailer.setup_config(config=config_name, database=database_name, file=file_name, pages=pages, range=range)
+    aemailer.setup_config(config=config_name, database=database_name, file=file_name, pages=pages, items_range=range)
     return aemailer
     
     
@@ -126,7 +126,7 @@ def test_setup_config():
     email_address = "sender@gmail.com"
     email_password = "password"
     
-    aemailer.setup_config(pages=pages, email_list=email_list, range=range, config=config_name, database=database_name, file=file_name, email_address=email_address, email_password=email_password)
+    aemailer.setup_config(pages=pages, email_list=email_list, items_range=range, config=config_name, database=database_name, file=file_name, email_address=email_address, email_password=email_password)
     
     assert aemailer._database_name == "./tests/database_test.db"
     assert aemailer._config_name == "./tests/config_test.yaml"

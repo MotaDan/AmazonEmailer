@@ -8,7 +8,7 @@ import time
 def main(args, aemailer):
     """Sets up database, gets items, generates files and emails them."""
     aemailer.read_config()
-    aemailer.setup_config(pages=args.pages, email_list=args.email_list, range=args.range, config=args.config, database=args.database, file=args.file, email_address=args.email_address, email_password=args.email_password, time=args.time, frequency=args.frequency)
+    aemailer.setup_config(pages=args.pages, email_list=args.email_list, items_range=args.range, config=args.config, database=args.database, file=args.file, email_address=args.email_address, email_password=args.email_password, send_time=args.time, frequency=args.frequency)
     aemailer.write_config()
     
     aemailer.setup_database()
