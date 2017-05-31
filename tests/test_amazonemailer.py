@@ -1,6 +1,5 @@
 """Testing script"""
 import pytest
-from os import path, remove
 from amazonemailer import *
 
 

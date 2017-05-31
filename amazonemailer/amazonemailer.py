@@ -106,7 +106,7 @@ class AmazonEmailer:
             
     def get_asin(self, address):
         """Strips the ASIN out of a url and returns in."""
-        splitaddy = re.split('[/\?]+', address)
+        splitaddy = re.split('[/?]+', address)
         asin = [elem for elem in splitaddy if re.match("[A-Z0-9]{10}", elem)]
         asin = " ".join(asin)  # In case there are false positives everything is returned.
         if len(asin) > 10:   print(asin)
@@ -124,8 +124,8 @@ class AmazonEmailer:
             r = requests.get(page)
             asoup = BeautifulSoup(r.text, 'lxml')
             items_list = asoup.find_all('li', class_="s-result-item")
-            first_page_num = ceil(int(self._range[0]) / len(items_list))
-            last_page_num = ceil(int(self._range[1]) / len(items_list))
+            first_page_num = int(ceil(int(self._range[0]) / len(items_list)))
+            last_page_num = int(ceil(int(self._range[1]) / len(items_list)))
             
             # Getting the category
             category_chain = asoup.find('h2', id="s-result-count").span.contents
@@ -185,7 +185,7 @@ class AmazonEmailer:
         
         for page in self._pages:
             r = requests.get(page)
-            first_page_num = ceil(int(self._range[0]) / 20)
+            first_page_num = int(ceil(int(self._range[0]) / 20))
             
             # Fast forwarding to the first page in the range
             for page_num in range(first_page_num):
@@ -194,7 +194,7 @@ class AmazonEmailer:
                 r = requests.get(next_page)
             
             # Going through all the pages and getting their items.
-            for page_num in range(first_page_num, ceil(int(self._range[1]) / 20)+1):
+            for page_num in range(first_page_num, int(ceil(int(self._range[1]) / 20))+1):
                 asoup = BeautifulSoup(r.text, 'lxml')
                 next_page = asoup.find('a', page=str(page_num+1))['href']
                 categorystr = asoup.find('span', class_="category").string
