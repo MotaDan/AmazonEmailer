@@ -115,6 +115,10 @@ class AmazonEmailer:
             print(asin)
         return asin
 
+    def pull_indicidual_item(self):
+        """Pulls item information down for a single item."""
+        pass
+
     def pull_items_search(self):
         """Pulls items down from amazon for the given pages."""
         print("Retrieving Items...")
