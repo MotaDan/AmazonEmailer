@@ -3,10 +3,10 @@ database name: ./tests/database_test.db
 email info:
   email address: ''
   email password: ''
-email list: ''
+email list: email1@test.com, email2@test.com, email3@test.com
 file name: ./tests/AmazonItems_test
 frequency: daily
 pages: https://www.amazon.com/gp/bestsellers/wireless/ref=sv_cps_6, https://www.amazon.com/Best-Sellers-Cell-Phones-Accessories-Unlocked/zgbs/wireless/2407749011/ref=zg_bs_nav_cps_1_cps,
   https://www.amazon.com/Best-Sellers-Cell-Phones-Accessories-Phone-Cases-Holsters-Clips/zgbs/wireless/2407760011/ref=zg_bs_nav_cps_2_2407749011
-range: 15,50
+range: 15, 50
 time: '9:00'

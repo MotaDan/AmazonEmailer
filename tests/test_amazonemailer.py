@@ -17,12 +17,13 @@ def config_setup():
     aemailer = AmazonEmailer()
     database_name = "./tests/database_test.db"
     config_name = "./tests/config_test.yaml"
-    file_name = "./tests/AmazonItems_test"
-    items_range = "15,50"
+    email_list = "email1@test.com, email2@test.com, email3@test.com"
     # noinspection PyPep8
     pages = """https://www.amazon.com/gp/bestsellers/wireless/ref=sv_cps_6, https://www.amazon.com/Best-Sellers-Cell-Phones-Accessories-Unlocked/zgbs/wireless/2407749011/ref=zg_bs_nav_cps_1_cps, https://www.amazon.com/Best-Sellers-Cell-Phones-Accessories-Phone-Cases-Holsters-Clips/zgbs/wireless/2407760011/ref=zg_bs_nav_cps_2_2407749011"""
-    aemailer.setup_config(config=config_name, database=database_name, file=file_name,
-                          pages=pages, items_range=items_range)
+    file_name = "./tests/AmazonItems_test"
+    items_range = "15,50"
+    aemailer.setup_config(database=database_name, config=config_name, email_list=email_list, pages=pages,
+                          items_range=items_range, file=file_name,)
     return aemailer
 
 
@@ -114,12 +115,12 @@ def test_read_config():
     
     assert aemailer._database_name == "./tests/database_test.db"
     assert aemailer._config_name == "./tests/config_test.yaml"
-    assert aemailer._email_list == []
+    assert aemailer._email_list == ['email1@test.com', 'email2@test.com', 'email3@test.com']
     # noinspection PyPep8
-    assert aemailer._pages == ['https://www.amazon.com/gp/bestsellers/wireless/ref=sv_cps_6', ' https://www.amazon.com/Best-Sellers-Cell-Phones-Accessories-Unlocked/zgbs/wireless/2407749011/ref=zg_bs_nav_cps_1_cps', ' https://www.amazon.com/Best-Sellers-Cell-Phones-Accessories-Phone-Cases-Holsters-Clips/zgbs/wireless/2407760011/ref=zg_bs_nav_cps_2_2407749011']
+    assert aemailer._pages == ['https://www.amazon.com/gp/bestsellers/wireless/ref=sv_cps_6', 'https://www.amazon.com/Best-Sellers-Cell-Phones-Accessories-Unlocked/zgbs/wireless/2407749011/ref=zg_bs_nav_cps_1_cps', 'https://www.amazon.com/Best-Sellers-Cell-Phones-Accessories-Phone-Cases-Holsters-Clips/zgbs/wireless/2407760011/ref=zg_bs_nav_cps_2_2407749011']
     assert aemailer._range == ['15', '50']
     assert aemailer._file_name == "./tests/AmazonItems_test"
-    assert aemailer._email_address is None
+    assert aemailer._email_address == ''
     assert aemailer._email_password == ''
 
 
@@ -145,7 +146,7 @@ def test_setup_config():
     assert aemailer._config_name == "./tests/config_test.yaml"
     assert aemailer._email_list == ['Test@gmail.com', 'Test2@gmail.com']
     # noinspection PyPep8
-    assert aemailer._pages == ['https://www.amazon.com/gp/bestsellers/wireless/ref=sv_cps_6', ' https://www.amazon.com/Best-Sellers-Cell-Phones-Accessories-Unlocked/zgbs/wireless/2407749011/ref=zg_bs_nav_cps_1_cps', ' https://www.amazon.com/Best-Sellers-Cell-Phones-Accessories-Phone-Cases-Holsters-Clips/zgbs/wireless/2407760011/ref=zg_bs_nav_cps_2_2407749011']
+    assert aemailer._pages == ['https://www.amazon.com/gp/bestsellers/wireless/ref=sv_cps_6', 'https://www.amazon.com/Best-Sellers-Cell-Phones-Accessories-Unlocked/zgbs/wireless/2407749011/ref=zg_bs_nav_cps_1_cps', 'https://www.amazon.com/Best-Sellers-Cell-Phones-Accessories-Phone-Cases-Holsters-Clips/zgbs/wireless/2407760011/ref=zg_bs_nav_cps_2_2407749011']
     assert aemailer._range == ['1', '50']
     assert aemailer._file_name == "./tests/AmazonItems_test"
     assert aemailer._email_address == 'sender@gmail.com'

@@ -115,7 +115,7 @@ class AmazonEmailer:
             print(asin)
         return asin
 
-    def pull_indicidual_item(self):
+    def pull_individual_item(self):
         """Pulls item information down for a single item."""
         pass
 
@@ -238,9 +238,9 @@ class AmazonEmailer:
         email_address = self._email_address if self._email_address is not None else ''
 
         with open(self._config_name, 'w') as f:
-            yaml.dump({'pages': ','.join(self._pages),
-                       'email list': ','.join(self._email_list),
-                       'range': ','.join(self._range),
+            yaml.dump({'pages': ', '.join(self._pages),
+                       'email list': ', '.join(self._email_list),
+                       'range': ', '.join(self._range),
                        'config name': self._config_name,
                        'database name': self._database_name,
                        'file name': self._file_name,
@@ -254,17 +254,16 @@ class AmazonEmailer:
             config_info = yaml.load(f)
 
         try:
-            self._pages = config_info['pages'].split(',') if len(config_info['pages']) > 0 else []
-            self._email_list = config_info['email list'].split(',') if len(config_info['email list']) > 0 else []
-            self._range = config_info['range'].split(',') if len(config_info['range']) > 0 else self._range
-            self._config_name = config_info['config name']
-            self._database_name = config_info['database name']
-            self._file_name = config_info['file name']
-            self._email_address = config_info['email info']['email address'] if config_info['email info'][
-                                                                                    'email address'] != '' else None
-            self._email_password = config_info['email info']['email password']
-            self._time = config_info['time']
-            self._frequency = config_info['frequency']
+            self.setup_config(pages=config_info['pages'],
+                              email_list=config_info['email list'],
+                              items_range=config_info['range'],
+                              config=config_info['config name'],
+                              database=config_info['database name'],
+                              file=config_info['file name'],
+                              email_address=config_info['email info']['email address'],
+                              email_password=config_info['email info']['email password'],
+                              send_time=config_info['time'],
+                              frequency=config_info['frequency'])
         except KeyError as e:
             print("Incomplete config file.")
             print(e)
@@ -272,20 +271,20 @@ class AmazonEmailer:
     def setup_config(self, pages=None, email_list=None, items_range=None, config=None, database=None, file=None,
                      email_address=None, email_password=None, send_time=None, frequency=None):
         """Get all available information from passed in config file."""
-        self._pages = pages.split(',') if pages is not None else self._pages
-        self._email_list = email_list.split(',') if email_list is not None else self._email_list
-        self._range = items_range.split(',') if items_range is not None else self._range
+        self._pages = pages.replace(' ', '').split(',') if pages is not None and len(pages) > 0 else []
+        self._email_list = email_list.replace(' ', '').split(',') if email_list is not None and len(email_list) > 0 else []
+        self._range = items_range.replace(' ', '').split(',') if re.search("[0-9]+,\s?[0-9]+", items_range) is not None else self._range
         self._config_name = config if config is not None else self._config_name
         self._database_name = database if database is not None else self._database_name
         self._file_name = file if file is not None else self._file_name
-        self._email_address = email_address if email_address is not None else self._email_address
+        self._email_address = email_address if email_address is not None else ''
         self._email_password = email_password if email_password is not None else self._email_password
         self._time = send_time if send_time is not None else self._time
         self._frequency = frequency if frequency is not None else self._frequency
 
     def send_email(self):
         """Sends output files to the emails in the list."""
-        if self._email_address and keyring.get_password('yagmail', self._email_address) is None:
+        if self._email_address != '' and keyring.get_password('yagmail', self._email_address) is None:
             self.store_email_info()
 
         try:
