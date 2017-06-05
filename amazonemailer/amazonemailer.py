@@ -271,13 +271,13 @@ class AmazonEmailer:
     def setup_config(self, pages=None, email_list=None, items_range=None, config=None, database=None, file=None,
                      email_address=None, email_password=None, send_time=None, frequency=None):
         """Get all available information from passed in config file."""
-        self._pages = pages.replace(' ', '').split(',') if pages is not None and len(pages) > 0 else []
-        self._email_list = email_list.replace(' ', '').split(',') if email_list is not None and len(email_list) > 0 else []
+        self._pages = pages.replace(' ', '').split(',') if len(pages) > 0 else self._pages
+        self._email_list = email_list.replace(' ', '').split(',') if len(email_list) > 0 else self._email_list
         self._range = items_range.replace(' ', '').split(',') if re.search("[0-9]+,\s?[0-9]+", items_range) is not None else self._range
         self._config_name = config if config is not None else self._config_name
         self._database_name = database if database is not None else self._database_name
         self._file_name = file if file is not None else self._file_name
-        self._email_address = email_address if email_address is not None else ''
+        self._email_address = email_address if email_address is not None else self._email_address
         self._email_password = email_password if email_password is not None else self._email_password
         self._time = send_time if send_time is not None else self._time
         self._frequency = frequency if frequency is not None else self._frequency
