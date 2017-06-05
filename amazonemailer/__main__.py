@@ -8,6 +8,7 @@ import time
 def main(arguments, emailer):
     """Sets up database, gets items, generates files and emails them."""
     emailer.read_config()
+    print("Config read.")
     emailer.setup_config(pages=arguments.pages,
                          email_list=arguments.email_list,
                          items_range=arguments.range,
@@ -21,12 +22,18 @@ def main(arguments, emailer):
     emailer.write_config()
     
     emailer.setup_database()
+    print("Retrieving items.")
     emailer.pull_items_search()
+    print("Items retrieved")
     
     emailer.items_to_xls()
+    print("xls file created.")
     emailer.items_to_csv()
+    print("csv file created")
 
+    print("Sending emails.")
     emailer.send_email()
+    print("Emails sent.")
     
     
 if __name__ == "__main__":
