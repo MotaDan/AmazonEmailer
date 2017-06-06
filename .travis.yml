@@ -6,6 +6,7 @@ python:
   - '3.7-dev'
   - nightly
 install: 
+  - pip install dbus-python
   - pip install -r dev-requirements.in -r requirements.in -r test-requirements.in
 script: python -m pytest tests
 after_success: coveralls
