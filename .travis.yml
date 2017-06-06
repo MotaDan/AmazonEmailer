@@ -5,6 +5,9 @@ python:
   - '3.6-dev'
   - '3.7-dev'
   - nightly
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install -y dbus
 install: 
   - pip install dbus-python
   - pip install -r dev-requirements.in -r requirements.in -r test-requirements.in
