@@ -1,12 +1,14 @@
 language: python
 python:
-- '3.5'
-- '3.6'
-- '3.6-dev'
-- '3.7-dev'
-- nightly
-install: pip install -r requirements.txt -r test-requirements.txt
-script: py.test
+  - '3.5'
+  - '3.6'
+  - '3.6-dev'
+  - '3.7-dev'
+  - nightly
+install: 
+  - pip install -r dev-requirements.txt
+  - pip-sync requirements.txt test-requirements.txt
+script: python -m pytest tests
 after_success: coveralls
 deploy:
   provider: pypi
@@ -19,4 +21,4 @@ deploy:
     repo: MotaDan/AmazonEmailer
 matrix:
     allow_failures:
-    - python:
+      - python:
