@@ -271,9 +271,9 @@ class AmazonEmailer:
     def setup_config(self, pages=None, email_list=None, items_range=None, config=None, database=None, file=None,
                      email_address=None, email_password=None, send_time=None, frequency=None):
         """Get all available information from passed in config file."""
-        self._pages = pages.replace(' ', '').split(',') if len(pages) > 0 else self._pages
-        self._email_list = email_list.replace(' ', '').split(',') if len(email_list) > 0 else self._email_list
-        self._range = items_range.replace(' ', '').split(',') if re.search("[0-9]+,\s?[0-9]+", items_range) is not None else self._range
+        self._pages = pages.replace(' ', '').split(',') if pages is not None and len(pages) > 0 else self._pages
+        self._email_list = email_list.replace(' ', '').split(',') if email_list is not None and len(email_list) > 0 else self._email_list
+        self._range = items_range.replace(' ', '').split(',') if items_range is not None and re.search("[0-9]+,\s?[0-9]+", items_range) is not None else self._range
         self._config_name = config if config is not None else self._config_name
         self._database_name = database if database is not None else self._database_name
         self._file_name = file if file is not None else self._file_name
@@ -284,11 +284,13 @@ class AmazonEmailer:
 
     def send_email(self):
         """Sends output files to the emails in the list."""
-        if self._email_address != '' and keyring.get_password('yagmail', self._email_address) is None:
+        email_address = self._email_address if self._email_address != '' else None
+        
+        if keyring.get_password('yagmail', email_address) is None:
             self.store_email_info()
 
         try:
-            with yagmail.SMTP(self._email_address) as yag:
+            with yagmail.SMTP(email_address) as yag:
                 contents = ["Attached are the amazon items.", "output/AmazonItems.xls"]
 
                 if len(self._email_list) > 0:
@@ -296,7 +298,7 @@ class AmazonEmailer:
                     print("Email sent to " + ", ".join(self._email_list))
                 else:
                     yag.send(subject="AmazonEmailer", contents=contents)
-                    print("Email sent to " + self._email_address)
+                    print("Email sent to " + email_address)
         except FileNotFoundError:
             print("Need gmail address to send emails from.")
 

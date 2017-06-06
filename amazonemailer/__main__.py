@@ -22,7 +22,6 @@ def main(arguments, emailer):
     emailer.write_config()
     
     emailer.setup_database()
-    print("Retrieving items.")
     emailer.pull_items_search()
     print("Items retrieved")
     
@@ -33,7 +32,6 @@ def main(arguments, emailer):
 
     print("Sending emails.")
     emailer.send_email()
-    print("Emails sent.")
     
     
 if __name__ == "__main__":
