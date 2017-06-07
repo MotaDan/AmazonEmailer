@@ -7,7 +7,7 @@ python:
   - nightly
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y dbus
+  - sudo apt-get install -y libdbus-1-dev
 install: 
   - pip install dbus-python
   - pip install -r dev-requirements.in -r requirements.in -r test-requirements.in
