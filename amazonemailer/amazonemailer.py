@@ -125,9 +125,10 @@ class AmazonEmailer:
 
         connection = sqlite3.connect(self._database_name)
         cursor = connection.cursor()
+        headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
 
         for page in self._pages:
-            r = requests.get(page)
+            r = requests.get(page, headers=headers)
             asoup = BeautifulSoup(r.text, 'lxml')
             items_list = asoup.find_all('li', class_="s-result-item")
             first_page_num = int(ceil(int(self._range[0]) / len(items_list)))
@@ -148,12 +149,6 @@ class AmazonEmailer:
             # Going through all the pages and getting their items.
             for page_num in range(first_page_num, last_page_num + 1):
                 asoup = BeautifulSoup(r.text, 'lxml')
-                try:
-                    next_page = "https://www.amazon.com" + asoup.find('a', id="pagnNextLink")['href']
-                except TypeError:
-                    print("Error: Range higher than number of items.")
-                    print(categorystr)
-                    break
 
                 # zg_itemImmersion is the tag that contains all the data on an item.
                 items = asoup.find_all('li', class_="s-result-item")
@@ -183,8 +178,18 @@ class AmazonEmailer:
                         categorystr, namestr, reviewscorestr, pricestr, linkstr, rankstr, asinstr, reviewersstr))
 
                 connection.commit()
+
+                try:
+                    next_page = "https://www.amazon.com" + asoup.find('a', id="pagnNextLink")['href']
+                except TypeError:
+                    print("Error: Range higher than number of items.")
+                    print(categorystr)
+                    print(asoup)
+                    break
+
                 time.sleep(1)
                 r = requests.get(next_page)
+            time.sleep(1)
 
     def pull_items_best_sellers(self):
         """Pulls items down from amazon for the given top 100 best sellers pages."""
