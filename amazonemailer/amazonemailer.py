@@ -182,7 +182,7 @@ class AmazonEmailer:
                 try:
                     next_page = "https://www.amazon.com" + asoup.find('a', id="pagnNextLink")['href']
                 except TypeError:
-                    print("Error: Range higher than number of items.")
+                    print("Error: No more pages, range higher than number of items.")
                     print(categorystr)
                     print(asoup)
                     break
