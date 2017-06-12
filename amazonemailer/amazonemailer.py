@@ -187,9 +187,14 @@ class AmazonEmailer:
                 try:
                     next_page = "https://www.amazon.com" + asoup.find('a', id="pagnNextLink")['href']
                 except TypeError:
-                    print("Error: No more pages, range higher than number of items.")
+                    if asoup.head.title.string != "Robot Check":
+                        print("Error: No more pages, range higher than number of items.")
+                    else:
+                        print("You've been discovered as a bot. Take a break and come back tomorrow.")
                     print(categorystr)
-                    print(asoup)
+                    with open("./output/failed_{}.html".format(categorystr.replace(" ", "")), 'w') as f:
+                        f.write(asoup.prettify())
+                        print("Failed html written to ./output/failed_{}.html".format(categorystr.replace(" ", "")))
                     break
 
                 time.sleep(1)
