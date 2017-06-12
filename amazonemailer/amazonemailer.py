@@ -132,7 +132,7 @@ class AmazonEmailer:
             asoup = BeautifulSoup(r.text, 'lxml')
             items_list = asoup.find_all('li', class_="s-result-item")
             
-            try:            
+            try:
                 first_page_num = int(ceil(int(self._range[0]) / len(items_list)))
                 last_page_num = int(ceil(int(self._range[1]) / len(items_list)))
             except ZeroDivisionError:
