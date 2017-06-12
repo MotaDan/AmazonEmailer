@@ -131,8 +131,13 @@ class AmazonEmailer:
             r = requests.get(page, headers=headers)
             asoup = BeautifulSoup(r.text, 'lxml')
             items_list = asoup.find_all('li', class_="s-result-item")
-            first_page_num = int(ceil(int(self._range[0]) / len(items_list)))
-            last_page_num = int(ceil(int(self._range[1]) / len(items_list)))
+            
+            try:            
+                first_page_num = int(ceil(int(self._range[0]) / len(items_list)))
+                last_page_num = int(ceil(int(self._range[1]) / len(items_list)))
+            except ZeroDivisionError:
+                print("No items found.")
+                return
 
             # Getting the category
             category_chain = asoup.find('h2', id="s-result-count").span.contents
