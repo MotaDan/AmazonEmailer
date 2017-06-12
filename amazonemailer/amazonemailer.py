@@ -10,6 +10,7 @@ import keyring
 import yaml
 from math import ceil
 import time
+import random
 
 
 class AmazonEmailer:
@@ -125,9 +126,10 @@ class AmazonEmailer:
 
         connection = sqlite3.connect(self._database_name)
         cursor = connection.cursor()
-        headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
+        user_agents = ["Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36", "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:53.0) Gecko/20100101 Firefox/53.0", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_4) AppleWebKit/603.1.30 (KHTML, like Gecko) Version/10.1 Safari/603.1.30", "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:53.0) Gecko/20100101 Firefox/53.0", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.96 Safari/537.36", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:53.0) Gecko/20100101 Firefox/53.0", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36"]
 
         for page in self._pages:
+            headers = {'User-Agent': '{}'.format(random.choice(user_agents))}
             r = requests.get(page, headers=headers)
             asoup = BeautifulSoup(r.text, 'lxml')
             items_list = asoup.find_all('li', class_="s-result-item")
@@ -145,6 +147,7 @@ class AmazonEmailer:
             for category in category_chain:
                 categorystr += category.string
             categorystr = categorystr.replace(':', '>')
+            print(categorystr)
 
             # Fast forwarding to the first page in the range
             next_page = "https://www.amazon.com" + asoup.find('span', class_="pagnLink").contents[0]['href']
@@ -196,10 +199,10 @@ class AmazonEmailer:
                         f.write(asoup.prettify())
                         print("Failed html written to ./output/failed_{}.html".format(categorystr.replace(" ", "")))
                     break
-
+                
                 time.sleep(1)
                 r = requests.get(next_page)
-            time.sleep(1)
+            time.sleep(45)
 
     def pull_items_best_sellers(self):
         """Pulls items down from amazon for the given top 100 best sellers pages."""
