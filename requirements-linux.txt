@@ -10,6 +10,7 @@ certifi==2017.4.17        # via requests
 cffi==1.10.0              # via cryptography
 chardet==3.0.4            # via requests
 cryptography==1.9         # via secretstorage
+fake-useragent==0.1.7
 idna==2.5                 # via cryptography, requests
 keyring==10.3.3           # via yagmail
 lxml==3.8.0

@@ -5,3 +5,4 @@ tablib
 yagmail[all]
 PyYAML
 schedule
+fake-useragent
