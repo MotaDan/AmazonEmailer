@@ -196,9 +196,9 @@ class AmazonEmailer:
                     else:
                         print("You've been discovered as a bot. Take a break and come back tomorrow.")
                     
-                    with open("./output/failed_{}.html".format(categorystr.replace(" ", "")), 'w') as f:
+                    with open("./output/failed_{}.html".format(categorystr.replace(" ", "").replace(">", ",")), 'w') as f:
                         f.write(asoup.prettify())
-                        print("Failed html written to ./output/failed_{}.html".format(categorystr.replace(" ", "")))
+                        print("Failed html written to ./output/failed_{}.html".format(categorystr.replace(" ", "").replace(">", ",")))
                     break
                 
                 time.sleep(5)
