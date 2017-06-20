@@ -305,8 +305,7 @@ class AmazonEmailer:
         """Sends output files to the emails in the list."""
         email_address = self._email_address if self._email_address != '' else None
         
-        if keyring.get_password('yagmail', email_address) is None:
-            self.store_email_info()
+        self.store_email_info()
 
         try:
             with yagmail.SMTP(email_address) as yag:
