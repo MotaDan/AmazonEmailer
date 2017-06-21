@@ -156,7 +156,7 @@ class AmazonEmailer:
             for category in category_chain:
                 if category.string is not None:
                     categorystr += category.string
-            categorystr = categorystr.replace(':', '>')
+            categorystr = categorystr.replace(':', '-')
             print(categorystr)
 
             # Fast forwarding to the first page in the range
@@ -210,9 +210,9 @@ class AmazonEmailer:
                 except TypeError:
                     if asoup.head.title.string != "Robot Check":
                         print("Error: No more pages, range higher than number of items.")
-                        with open("./output/failed_{}.html".format(categorystr.replace(" ", "").replace(">", ",")), 'w') as f:
+                        with open("./output/failed_{}.html".format(categorystr.replace(" ", "")), 'w') as f:
                             f.write(asoup.prettify())
-                            print("Failed html written to ./output/failed_{}.html".format(categorystr.replace(" ", "").replace(">", ",")))
+                            print("Failed html written to ./output/failed_{}.html".format(categorystr.replace(" ", "")))
                     else:
                         print("You've been discovered as a bot. Take a break and come back tomorrow.")
                         return 'bot'
