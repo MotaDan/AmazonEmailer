@@ -22,8 +22,10 @@ def main(arguments, emailer):
     emailer.write_config()
     
     emailer.setup_database()
-    emailer.pull_items_search()
-    print("Items retrieved")
+    if emailer.pull_items_search() != 'bot':
+        print("Items retrieved")
+    else:
+        return
     
     emailer.items_to_xls()
     print("xls file created.")

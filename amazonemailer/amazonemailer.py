@@ -133,12 +133,17 @@ class AmazonEmailer:
             headers = {'User-Agent': '{}'.format(ua.random)}
             r = requests.get(page, headers=headers)
             asoup = BeautifulSoup(r.text, 'lxml')
+
+            if asoup.head.title.string != "Robot Check":
+                print("You've been discovered as a bot. Take a break and come back tomorrow.")
+                return 'bot'
+
             items_list = asoup.find_all('li', class_="s-result-item")
             
-            try:
+            if len(items_list) > 0:
                 first_page_num = int(ceil(int(self._range[0]) / len(items_list)))
                 last_page_num = int(ceil(int(self._range[1]) / len(items_list)))
-            except ZeroDivisionError:
+            else:
                 print("No items found.")
                 with open("./output/no_items.html", 'w') as f:
                     f.write(asoup.prettify())
@@ -210,7 +215,7 @@ class AmazonEmailer:
                             print("Failed html written to ./output/failed_{}.html".format(categorystr.replace(" ", "").replace(">", ",")))
                     else:
                         print("You've been discovered as a bot. Take a break and come back tomorrow.")
-                        return
+                        return 'bot'
                     
                     break
                 
