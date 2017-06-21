@@ -140,13 +140,17 @@ class AmazonEmailer:
                 last_page_num = int(ceil(int(self._range[1]) / len(items_list)))
             except ZeroDivisionError:
                 print("No items found.")
+                with open("./output/no_items_{}.html".format(categorystr.replace(" ", "").replace(">", ",")), 'w') as f:
+                    f.write(asoup.prettify())
+                    print("Item less html written to ./output/no_items_{}.html".format(categorystr.replace(" ", "").replace(">", ",")))
                 return
 
             # Getting the category
             category_chain = asoup.find('h2', id="s-result-count").span.contents
             categorystr = ''
             for category in category_chain:
-                categorystr += category.string
+                if category.string is not None:
+                    categorystr += category.string
             categorystr = categorystr.replace(':', '>')
             print(categorystr)
 
