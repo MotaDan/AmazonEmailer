@@ -182,6 +182,9 @@ class AmazonEmailer:
                     fract = item.find('sup', class_="sx-price-fractional").string \
                         if item.find('sup', class_="sx-price-fractional") is not None else '00'
                     pricestr = "{}.{}".format(whole, fract)
+                    if pricestr == '00.00':
+                        pricestr = item.find('span', class_="a-size-small s-padding-right-micro").string \
+                            if item.find('span', class_="a-size-small s-padding-right-micro") is not None else '0.00'
                     asinstr = item['data-asin']
                     rankstr = item['id'][len("result_"):]
 
