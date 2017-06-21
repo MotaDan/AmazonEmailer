@@ -197,17 +197,21 @@ class AmazonEmailer:
                 except TypeError:
                     if asoup.head.title.string != "Robot Check":
                         print("Error: No more pages, range higher than number of items.")
+                        with open("./output/failed_{}.html".format(categorystr.replace(" ", "").replace(">", ",")), 'w') as f:
+                            f.write(asoup.prettify())
+                            print("Failed html written to ./output/failed_{}.html".format(categorystr.replace(" ", "").replace(">", ",")))
                     else:
                         print("You've been discovered as a bot. Take a break and come back tomorrow.")
+                        return
                     
-                    with open("./output/failed_{}.html".format(categorystr.replace(" ", "").replace(">", ",")), 'w') as f:
-                        f.write(asoup.prettify())
-                        print("Failed html written to ./output/failed_{}.html".format(categorystr.replace(" ", "").replace(">", ",")))
                     break
                 
-                time.sleep(5)
-                r = requests.get(next_page)
-            time.sleep(45)
+                if page_num != last_page_num:
+                    time.sleep(5)
+                    r = requests.get(next_page)
+
+            if page is not self._pages[-1]:
+                time.sleep(45)
 
     def pull_items_best_sellers(self):
         """Pulls items down from amazon for the given top 100 best sellers pages."""
