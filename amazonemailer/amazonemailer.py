@@ -325,8 +325,9 @@ class AmazonEmailer:
     def send_email(self):
         """Sends output files to the emails in the list."""
         email_address = self._email_address if self._email_address != '' else None
-        
-        self.store_email_info()
+
+        if self._email_password != '':
+            self.store_email_info()
 
         try:
             with yagmail.SMTP(email_address) as yag:
