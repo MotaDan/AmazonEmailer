@@ -46,16 +46,20 @@ if __name__ == "__main__":
     parser.add_argument("-b", "--email_password", help="email address password for the sender")
     parser.add_argument("-t", "--time", help="time to be run")
     parser.add_argument("-q", "--frequency", help="how often the email is sent. daily, weekly, monthly")
+    parser.add_argument("-s", "--no-schedule", help="disables the schedule from being run", dest='no_schedule', action='store_true')
     args = parser.parse_args()
     
     aemailer = AmazonEmailer()
     
     main(args, aemailer)
     
-    frequency = {'daily': 1, 'weekly': 7, 'monthly': 30}
-    
-    schedule.every(frequency[aemailer.frequency]).days.at(aemailer.time).do(main, args, aemailer)
-    
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
+    # Run the schedule
+    if args.no_schedule is False:
+        frequency = {'daily': 1, 'weekly': 7, 'monthly': 30}
+        
+        schedule.every(frequency[aemailer.frequency]).days.at(aemailer.time).do(main, args, aemailer)
+        
+        while True:
+            schedule.run_pending()
+            time.sleep(1)
+
