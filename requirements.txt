@@ -5,6 +5,7 @@
 #    pip-compile --output-file requirements.txt requirements.in
 #
 beautifulsoup4==4.6.0
+fake-useragent==0.1.7
 keyring==10.3.2           # via yagmail
 lxml==3.7.3
 pywin32-ctypes==0.0.1     # via keyring
