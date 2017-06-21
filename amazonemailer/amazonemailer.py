@@ -170,21 +170,26 @@ class AmazonEmailer:
                 for item in items:
                     linkstr = item.find('a', class_="a-link-normal a-text-normal")['href']
                     namestr = item.find('h2').string
-                    psbl_review_score = item.find('i', class_=re.compile("a-icon a-icon-star a-star-."))
-                    reviewscorestr = psbl_review_score.string if psbl_review_score is not None else ""
+
+                    reviewscorestr = ''
+                    if item.find('i', class_=re.compile("a-icon a-icon-star a-star-.")) is not None:
+                        reviewscorestr = item.find('i', class_=re.compile("a-icon a-icon-star a-star-.")).string
+                    
+                    reviewersstr = '0'
                     psbl_num_reviewers_tag = item.find('a', class_="a-size-small a-link-normal a-text-normal")
                     if psbl_num_reviewers_tag and "#customerReviews" in psbl_num_reviewers_tag['href']:
                         reviewersstr = item.find('a', class_="a-size-small a-link-normal a-text-normal").string
-                    else:
-                        reviewersstr = '0'
-                    whole = item.find('span', class_="sx-price-whole").string \
-                        if item.find('span', class_="sx-price-whole") is not None else '00'
-                    fract = item.find('sup', class_="sx-price-fractional").string \
-                        if item.find('sup', class_="sx-price-fractional") is not None else '00'
-                    pricestr = "{}.{}".format(whole, fract)
-                    if pricestr == '00.00':
-                        pricestr = item.find('span', class_="a-size-small s-padding-right-micro").string \
-                            if item.find('span', class_="a-size-small s-padding-right-micro") is not None else '0.00'
+
+                    pricestr = '0.00'
+                    # The price is broken up into a whole section and fractional section.
+                    if item.find('span', class_="sx-price-whole") is not None and item.find('sup', class_="sx-price-fractional") is not None:
+                        whole = item.find('span', class_="sx-price-whole").string
+                        fract = item.find('sup', class_="sx-price-fractional").string
+                        pricestr = "{}.{}".format(whole, fract)
+                    # The price is just its own full string value.
+                    elif pricestr == '0.00' and item.find('span', class_="a-size-small s-padding-right-micro") is not None:
+                        pricestr = item.find('span', class_="a-size-small s-padding-right-micro").string 
+
                     asinstr = item['data-asin']
                     rankstr = item['id'][len("result_"):]
 
