@@ -196,12 +196,13 @@ class AmazonEmailer:
                         pricestr = item.find('span', class_="a-size-small s-padding-right-micro").string 
 
                     asinstr = item['data-asin']
-                    rankstr = item['id'][len("result_"):]
+                    # The ranks on amazon are zero based
+                    ranknum = int(item['id'][len("result_"):]) + 1
 
                     sql_command = """INSERT  OR IGNORE INTO items (item_number, category, name, reviewscore, price, link, rank, asin, reviewers)
                     VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?);"""
                     cursor.execute(sql_command, (
-                        categorystr, namestr, reviewscorestr, pricestr, linkstr, rankstr, asinstr, reviewersstr))
+                        categorystr, namestr, reviewscorestr, pricestr, linkstr, ranknum, asinstr, reviewersstr))
 
                 connection.commit()
 
@@ -261,12 +262,13 @@ class AmazonEmailer:
                         pricestr = wrapper.find(class_="a-size-base a-color-price").string.lstrip('$')
                     linkstr = "https://www.amazon.com" + wrapper.find('a')['href']
                     asinstr = self.get_asin(linkstr)
-                    rankstr = item.find('span', class_='zg_rankNumber').string.strip().rstrip('.')
+                    # The ranks on amazon are zero based
+                    ranknum = int(item.find('span', class_='zg_rankNumber').string.strip().rstrip('.')) + 1
 
                     sql_command = """INSERT  OR IGNORE INTO items (item_number, category, name, reviewscore, price, link, rank, asin)
                     VALUES (NULL, ?, ?, ?, ?, ?, ?, ?);"""
                     cursor.execute(sql_command,
-                                   (categorystr, namestr, reviewscorestr, pricestr, linkstr, rankstr, asinstr))
+                                   (categorystr, namestr, reviewscorestr, pricestr, linkstr, ranknum, asinstr))
 
                 connection.commit()
                 r = requests.get(next_page)
