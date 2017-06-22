@@ -159,7 +159,12 @@ class AmazonEmailer:
             for category in category_chain:
                 if category.string is not None:
                     categorystr += category.string
-            categorystr = categorystr.replace(':', '-').replace('\n', '')
+
+            # If there are new lines in the category this was a search and the last piece is pulled from the search box.
+            if '\n' in categorystr:
+                categorystr = categorystr.replace('\n', '') + asoup.find('input', id="twotabsearchtextbox")["value"]
+
+            categorystr = categorystr.replace(':', '-')
             print(categorystr)
 
             # Fast forwarding to the first page in the range
