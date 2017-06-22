@@ -139,11 +139,13 @@ class AmazonEmailer:
                 print(headers['User-Agent'])
                 return 'bot'
 
+            # s-result-item is the tag that contains all the data on an item.
             items_list = asoup.find_all('li', class_="s-result-item")
             
             if len(items_list) > 0:
-                first_page_num = int(ceil(int(self._range[0]) / len(items_list)))
-                last_page_num = int(ceil(int(self._range[1]) / len(items_list)))
+                first_page_num = ceil(int(self._range[0]) / len(items_list))
+                # Getting one extra page because the item count can change between here and when the items are found.
+                last_page_num = ceil(int(self._range[1]) / len(items_list)) + 1
             else:
                 print("No items found.")
                 with open("./output/no_items.html", 'w') as f:
@@ -169,7 +171,7 @@ class AmazonEmailer:
             for page_num in range(first_page_num, last_page_num + 1):
                 asoup = BeautifulSoup(r.text, 'lxml')
 
-                # zg_itemImmersion is the tag that contains all the data on an item.
+                # s-result-item is the tag that contains all the data on an item.
                 items = asoup.find_all('li', class_="s-result-item")
 
                 # Scrapping the item information and adding it to the database.
