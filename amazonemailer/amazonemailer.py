@@ -136,6 +136,7 @@ class AmazonEmailer:
 
             if asoup.head.title.string == "Robot Check":
                 print("You've been discovered as a bot. Take a break and come back tomorrow.")
+                print(headers['User-Agent'])
                 return 'bot'
 
             items_list = asoup.find_all('li', class_="s-result-item")
@@ -207,14 +208,17 @@ class AmazonEmailer:
                     next_page = "https://www.amazon.com" + asoup.find('a', id="pagnNextLink")['href']
                 except TypeError:
                     if asoup.head.title.string != "Robot Check":
+                        print("You've been discovered as a bot. Take a break and come back tomorrow.")
+                        print(headers['User-Agent'])
+                        return 'bot'
+                    elif asoup.head.title.string != "503 Service Unavailable Error":
+                        print("503 Service Unavailable Error from Amazon. Try again.")
+                    else:
                         print("Error: No more pages, range higher than number of items.")
+                        print(next_page)
                         with open("./output/failed_{}.html".format(categorystr.replace(" ", "")), 'w') as f:
                             f.write(asoup.prettify())
                             print("Failed html written to ./output/failed_{}.html".format(categorystr.replace(" ", "")))
-                    else:
-                        print("You've been discovered as a bot. Take a break and come back tomorrow.")
-                        return 'bot'
-                    
                     break
                 
                 if page_num != last_page_num:
