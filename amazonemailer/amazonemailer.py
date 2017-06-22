@@ -168,11 +168,8 @@ class AmazonEmailer:
             for page_num in range(first_page_num, last_page_num + 1):
                 asoup = BeautifulSoup(r.text, 'lxml')
 
-                # zg_itemImmersion is the tag that contains all the data on an item.
-                items = asoup.find_all('li', class_="s-result-item")
-
                 # Scrapping the item information and adding it to the database.
-                for item in items:
+                for item in items_list:
                     linkstr = item.find('a', class_="a-link-normal a-text-normal")['href']
                     namestr = item.find('h2').string
 
