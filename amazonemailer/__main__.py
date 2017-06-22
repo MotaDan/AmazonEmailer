@@ -2,7 +2,7 @@
 import argparse
 from amazonemailer import *
 import schedule
-import time
+import time, datetime
 
 
 def main(arguments, emailer):
@@ -60,8 +60,11 @@ if __name__ == "__main__":
         frequency = {'daily': 1, 'weekly': 7, 'monthly': 30}
         
         schedule.every(frequency[aemailer.frequency]).days.at(aemailer.time).do(main, args, aemailer)
-        
+        print("The next email will be sent on " + schedule.next_run().strftime('%A %b %d %I:%M %p'))
+
         while True:
+            if schedule.next_run() < datetime.datetime.now():
+                print("The next email will be sent on " + schedule.next_run().strftime('%A %b %d %I:%M %p'))
             schedule.run_pending()
-            time.sleep(1)
+            time.sleep(60)
 

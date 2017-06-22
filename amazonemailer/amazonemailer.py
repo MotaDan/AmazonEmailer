@@ -134,7 +134,7 @@ class AmazonEmailer:
             r = requests.get(page, headers=headers)
             asoup = BeautifulSoup(r.text, 'lxml')
 
-            if asoup.head.title.string != "Robot Check":
+            if asoup.head.title.string == "Robot Check":
                 print("You've been discovered as a bot. Take a break and come back tomorrow.")
                 return 'bot'
 
