@@ -156,7 +156,7 @@ class AmazonEmailer:
             for category in category_chain:
                 if category.string is not None:
                     categorystr += category.string
-            categorystr = categorystr.replace(':', '-')
+            categorystr = categorystr.replace(':', '-').replace('\n', '')
             print(categorystr)
 
             # Fast forwarding to the first page in the range
@@ -246,7 +246,7 @@ class AmazonEmailer:
             for page_num in range(first_page_num, int(ceil(int(self._range[1]) / 20)) + 1):
                 asoup = BeautifulSoup(r.text, 'lxml')
                 next_page = asoup.find('a', page=str(page_num + 1))['href']
-                categorystr = asoup.find('span', class_="category").string
+                categorystr = asoup.find('span', class_="category").string.replace(':', '-').replace('\n', '')
 
                 # zg_itemImmersion is the tag that contains all the data on an item.
                 items = asoup.find_all('div', class_="zg_itemImmersion")
