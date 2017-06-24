@@ -18,8 +18,6 @@ install:
   - pip install -r dev-requirements.in -r requirements.in -r test-requirements.in
 script: python -m pytest tests
 after_success: coveralls
-virtualenv:
-  system_site_packages: true
 deploy:
   provider: pypi
   distributions: "sdist bdist_wheel"
