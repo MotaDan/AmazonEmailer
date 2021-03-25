@@ -9,7 +9,7 @@ fake-useragent==0.1.7
 keyring==10.3.2           # via yagmail
 lxml==3.7.3
 pywin32-ctypes==0.0.1     # via keyring
-pyyaml==3.12
+pyyaml==5.4
 requests==2.14.2
 schedule==0.4.2
 tablib==0.11.4
